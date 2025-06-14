@@ -11,11 +11,10 @@ export default function ControlPanel() {
   
 
   return (
-    <div style={{ padding: '2rem' }}>
-      <h2>Panel de Control</h2>
-      <JornadaForm />
+    <div className="form-panel" style={{ padding: '2rem' }}>
+      <JornadaForm/>
       <hr />
-      <JornadaList/>
+      <JornadaList jornadas={jornadas} />
     </div>
   );
 }
