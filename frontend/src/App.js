@@ -1,6 +1,6 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import LoginPage from './pages/LoginPage';
-import ControlPanel from './pages/ControlPanel';
+import PanelPage from './pages/PanelPage';
 
 const PrivateRoute = ({ children }) => {
   const token = localStorage.getItem('token');
@@ -12,7 +12,7 @@ function App() {
     <Router>
       <Routes>
         <Route path="/" element={<LoginPage />} />
-        <Route path="/dashboard" element={<PrivateRoute><ControlPanel /></PrivateRoute>} />
+        <Route path="/dashboard" element={<PrivateRoute><PanelPage /></PrivateRoute>} />
       </Routes>
     </Router>
   );
