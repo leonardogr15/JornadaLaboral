@@ -118,3 +118,21 @@
 .jornada-table tbody tr:hover {
     background-color: rgba(255, 255, 255, 0.15);
 }
+
+
+/* Estilos boton de configuracion */
+
+.config-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    height: 45px;
+    background: transparent;
+    border: none;
+    border-radius: 40px;
+    box-shadow: 0 0 10px rgb(0, 0, 0, 0.1);
+    cursor: pointer;
+    font-size: 16px;
+    color: #fff;
+    padding: 10px 20px;
+}
