@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import api from '../api';
 import { useNavigate } from 'react-router-dom';
 import '../styles/LoginStyle.css';
 import { FaUser, FaLock } from 'react-icons/fa';
@@ -9,14 +10,13 @@ export default function LoginForm() {
     const [error, setError] = useState('');
     const navigate = useNavigate();
 
-
     const handleSubmit = async (e) => {
         e.preventDefault();
-
-        if (email === 'a@c.com' && password === '123') {
-            localStorage.setItem('token', 'fake-jwt-token');
+        try {
+            const res = await api.post('/auth/login', { email, password });
+            localStorage.setItem('token', res.data.token);
             navigate('/dashboard');
-        } else {
+        } catch (err) {
             setError('Credenciales incorrectas');
         }
     };
@@ -40,8 +40,7 @@ export default function LoginForm() {
             </form>
 
         </div>
-    
-  );
+    );
 }
 
 
