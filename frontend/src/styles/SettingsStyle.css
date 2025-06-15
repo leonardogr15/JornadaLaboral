@@ -1,0 +1,65 @@
+/* Estilos del boton Volver y crear */
+.buttom-row {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+    gap: 10px;
+}
+
+.back-btn {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
+.back-icon {
+    font-size: 16px;
+}
+
+/* Panel creacion de usuario */
+.form-panel form {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+}
+
+/* Campor formulario creacion */
+.input-row {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+}
+
+.input-box {
+    position: relative;
+    width: 28%;
+}
+
+.input-box input {
+    height: 50px;
+}
+
+.input-box .icon {
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 16px;
+    color: #fff;
+}
+
+/* Campo de selección */
+form select {
+    width: 23%;
+    padding: 10px 20px;
+    border-radius: 40px;
+    font-size: 16px;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    background: transparent;
+    color: #fff;
+}
