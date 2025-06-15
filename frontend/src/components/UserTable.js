@@ -31,16 +31,18 @@ export default function UserTable() {
                 <tbody>
                     {usuarios.map((usuario) => (
                         <tr key={usuario.id}>
-                        <td>{usuario.email}</td>
-                        <td>{usuario.rol}</td>
-                        <td>
-                            <button onClick={() => editarUsuario(usuario)}>
-                            <FaEdit />
-                            </button>
-                            <button onClick={() => eliminarUsuario(usuario.id)}>
-                            <FaTrash />
-                            </button>
-                        </td>
+                            <td>{usuario.email}</td>
+                            <td>{usuario.rol}</td>
+                            <td>
+                                <div className="button-row-table">
+                                    <button onClick={() => editarUsuario(usuario)}>
+                                    <FaEdit />
+                                    </button>
+                                    <button onClick={() => eliminarUsuario(usuario.id)}>
+                                    <FaTrash />
+                                    </button>
+                                </div>
+                            </td>
                         </tr>
                     ))}
                 </tbody>

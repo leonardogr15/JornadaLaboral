@@ -14,6 +14,10 @@
     gap: 10px;
 }
 
+.buttom-row button{
+    width: 200px;
+}
+
 .back-icon {
     font-size: 16px;
 }
@@ -62,4 +66,13 @@ form select {
     border: 2px solid rgba(255, 255, 255, 0.2);
     background: transparent;
     color: #fff;
+}
+
+/* Estilos del boton Volver y crear */
+.button-row-table {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin-top: -20px;
 }
