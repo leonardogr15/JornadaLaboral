@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { FaClock } from 'react-icons/fa';
+import api from '../api';
 import '../styles/ControlPanelStyle.css';
 
 export default function JornadaForm({ onAdd }) {
@@ -11,7 +12,12 @@ export default function JornadaForm({ onAdd }) {
         e.preventDefault();
 
         try {
-        
+            const res = await api.post('/jornadas', {
+                horaEntrada: entrada,
+                horaSalida: salida,
+            });
+
+            onAdd(res.data);
             setMensaje('Hora registrada exitosamente');
             setEntrada('');
             setSalida('');
