@@ -10,7 +10,7 @@ export default function PanelPage() {
     navigate('/configuracion');
   };
   return (
-    <div style={{ padding: '2rem'}}>
+    <div style={{ padding: '2rem', width:'40%' }}>
       <div className="panel-header">
         <button className="config-btn" onClick={irAConfiguracion}>
           Configuración
