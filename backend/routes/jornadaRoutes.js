@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const authMiddleware = require('../middlewares/authMiddleware');
 const Jornada = require('../models/jornadaModel');
+const { registrarJornada } = require('../controllers/jornadaController');
 
 
 router.get('/', authMiddleware, async (data, res) => {
@@ -14,5 +15,7 @@ router.get('/', authMiddleware, async (data, res) => {
     res.status(500).json({ error: 'Error al obtener jornadas' });
   }
 });
+
+router.post('/', authMiddleware, registrarJornada);
 
 module.exports = router;
