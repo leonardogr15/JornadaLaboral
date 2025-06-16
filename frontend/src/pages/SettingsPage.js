@@ -3,11 +3,14 @@ import api from '../api';
 import UserForm from '../components/UserForm';
 import UserTable from '../components/UserTable';
 import '../styles/SettingsStyle.css';
+import { FaArrowLeft } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom';
 
 export default function SettingsPage() {
 
     const [usuarios, setUsuarios] = useState([]);
     const [usuarioEditando, setUsuarioEditando] = useState(null);
+    const navigate = useNavigate();
 
     useEffect(() => {
         (async () => {
@@ -43,6 +46,11 @@ export default function SettingsPage() {
 
     return (
         <div className="form-panel">
+            <div className="panel-header">
+                <button type="button" className="back-btn" onClick={() => navigate('/dashboard')}>
+                    <FaArrowLeft className="back-icon" /> Volver
+                </button>
+            </div>
             <UserForm onCreate={createUser} onUpdate={updateUser} editingUser={usuarioEditando} />
             <hr />
             <br/>
