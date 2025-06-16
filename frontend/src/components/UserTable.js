@@ -1,21 +1,38 @@
 import { FaTrash, FaEdit } from 'react-icons/fa';
-import { useState } from 'react';
+import { useState,useEffect } from 'react';
+import api from '../api';
 
 export default function UserTable() {
-    const [usuarios] = useState([
-        { id: 1, email: 'admin@correo.com', rol: 'admin' },
-        { id: 2, email: 'user@corr.com', rol: 'user' },
-    ]);
+    const [usuarios, setUsuarios] = useState([]);
+    const [error, setError] = useState('');
 
     const editarUsuario = (usuario) => {
         console.log('Editar usuario:', usuario);
     };
 
-    const eliminarUsuario = (id) => {
+    const eliminarUsuario = async (id) => {
         if (window.confirm('¿Eliminar este usuario?')) {
-        console.log('Eliminar usuario con ID:', id);
+            try {
+                await api.delete(`/usuarios/${id}`);
+                setUsuarios((prev) => prev.filter((u) => u.id !== id));
+            } catch (err) {
+            console.error('Error eliminando usuario:', err);
+            }
         }
     };
+
+    useEffect(() => {
+        const fetchUsuarios = async () => {
+            try {
+                const { data } = await api.get('/usuarios');
+                setUsuarios(data);
+            } catch (err) {
+                console.error('Error al obtener usuarios:', err);
+                setError('No se pudieron cargar los usuarios');
+            }
+        };
+        fetchUsuarios();
+    }, []);
 
     return (
         <div>
@@ -23,6 +40,7 @@ export default function UserTable() {
             <table className="jornada-table">
                 <thead>
                     <tr>
+                        <th>Nombre</th>
                         <th>Email</th>
                         <th>Rol</th>
                         <th>Acciones</th>
@@ -31,6 +49,7 @@ export default function UserTable() {
                 <tbody>
                     {usuarios.map((usuario) => (
                         <tr key={usuario.id}>
+                            <td>{usuario.nombre}</td>
                             <td>{usuario.email}</td>
                             <td>{usuario.rol}</td>
                             <td>
