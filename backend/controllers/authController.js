@@ -18,6 +18,6 @@ exports.login = async (req, res) => {
 
     res.json({ token });
   } catch (err) {
-    res.status(500).json({ message: 'Error en el servidor' });
+    res.status(500).json({ message: 'Error en el servidor: '+err.message  });
   }
 };
