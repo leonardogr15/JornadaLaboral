@@ -4,7 +4,7 @@ import LoginPage from './pages/LoginPage';
 import PanelPage from './pages/PanelPage';
 import SettingsPage from './pages/SettingsPage';
 
-function useAutoLogout(inactivityMs = 1 * 60 * 1000) {
+function useAutoLogout(inactivityMs = 5 * 60 * 1000) {
   const navigate = useNavigate();
   const timerId = useRef(null);
 
@@ -32,7 +32,7 @@ function useAutoLogout(inactivityMs = 1 * 60 * 1000) {
 
 const PrivateRoute = ({ children }) => {
   const token = localStorage.getItem('token');
-  useAutoLogout(1 * 60 * 1000);
+  useAutoLogout(5 * 60 * 1000);
   return token ? children : <Navigate to="/" />;
 };
 
