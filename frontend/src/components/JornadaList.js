@@ -9,7 +9,7 @@ export default function JornadaList({ jornadas }) {
               <th>Fecha</th>
               <th>Entrada</th>
               <th>Salida</th>
-              <th>Horas Trabajadas</th>
+              <th>Horas</th>
             </tr>
           </thead>
           <tbody>
@@ -21,11 +21,25 @@ export default function JornadaList({ jornadas }) {
                 year:  'numeric'
               });
 
+              const fmtHora = (hora24) => {
+                const [h, m] = hora24.split(':');
+                const dt = new Date();
+                dt.setHours(parseInt(h, 10), parseInt(m, 10), 0);
+                return dt.toLocaleTimeString('es-ES', {
+                  hour: 'numeric',
+                  minute: '2-digit',
+                  hour12: true
+                });
+              };
+
+              const entradaAMPM = fmtHora(j.horaEntrada);
+              const salidaAMPM  = fmtHora(j.horaSalida);
+
               return (
                 <tr key={index}>
                   <td>{fechaFormateada}</td>
-                  <td>{j.horaEntrada}</td>
-                  <td>{j.horaSalida}</td>
+                  <td>{entradaAMPM}</td>
+                  <td>{salidaAMPM}</td>
                   <td>{j.horasTrabajadas}</td>
                 </tr>
               );
