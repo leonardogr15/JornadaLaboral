@@ -7,6 +7,17 @@ import '../styles/ControlPanelStyle.css'
 export default function PanelPage() {
   const navigate = useNavigate();
 
+  const token = localStorage.getItem('token');
+  let userRole = null;
+  if (token) {
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      userRole = payload.rol;
+    } catch (err) {
+      console.error('Token inválido:', err);
+    }
+  }
+
   const irAConfiguracion = () => {
     navigate('/configuracion');
   };
@@ -23,9 +34,11 @@ export default function PanelPage() {
           Cerrar sesión <FiLogOut className="icon" />
         </button>
         
-        <button className="config-btn" onClick={irAConfiguracion}>
-          Configuración <FiSettings className="icon" />
-        </button>
+        {userRole === 'admin' && (
+          <button className="config-btn" onClick={irAConfiguracion}>
+            Configuración <FiSettings className="icon" />
+          </button>
+        )}
         
       </div>
       <ControlPanel />
