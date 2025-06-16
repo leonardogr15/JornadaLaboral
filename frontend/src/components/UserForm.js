@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { FaUser, FaLock, FaArrowLeft } from 'react-icons/fa';
+import { FaUser, FaLock } from 'react-icons/fa';
+import { IoIosArrowDown } from "react-icons/io";
 import '../styles/ControlPanelStyle.css';
 import { useNavigate } from 'react-router-dom';
 
@@ -50,10 +51,13 @@ export default function UserForm({ editingUser, onCreate, onUpdate }) {
                         <FaLock className="icon" />
                     </div>
 
-                    <select className='input-select-user' name="rol" value={nuevoUsuario.rol} onChange={handleChange}>
-                        <option value="user">Usuario</option>
-                        <option value="admin">Administrador</option>
-                    </select>
+                    <div className="input-box-user">
+                        <select className='input-select-user' name="rol" value={nuevoUsuario.rol} onChange={handleChange}>
+                            <option value="user">Usuario</option>
+                            <option value="admin">Administrador</option>
+                        </select>
+                        <IoIosArrowDown className="icon" />
+                    </div>
                 </div>
 
                 <div className="buttom-row">
