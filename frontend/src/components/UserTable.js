@@ -1,38 +1,6 @@
 import { FaTrash, FaEdit } from 'react-icons/fa';
-import { useState,useEffect } from 'react';
-import api from '../api';
 
-export default function UserTable() {
-    const [usuarios, setUsuarios] = useState([]);
-    const [error, setError] = useState('');
-
-    const editarUsuario = (usuario) => {
-        console.log('Editar usuario:', usuario);
-    };
-
-    const eliminarUsuario = async (id) => {
-        if (window.confirm('¿Eliminar este usuario?')) {
-            try {
-                await api.delete(`/usuarios/${id}`);
-                setUsuarios((prev) => prev.filter((u) => u.id !== id));
-            } catch (err) {
-            console.error('Error eliminando usuario:', err);
-            }
-        }
-    };
-
-    useEffect(() => {
-        const fetchUsuarios = async () => {
-            try {
-                const { data } = await api.get('/usuarios');
-                setUsuarios(data);
-            } catch (err) {
-                console.error('Error al obtener usuarios:', err);
-                setError('No se pudieron cargar los usuarios');
-            }
-        };
-        fetchUsuarios();
-    }, []);
+export default function UserTable({ usuarios, onDelete, onEdit }) {
 
     return (
         <div>
@@ -54,10 +22,10 @@ export default function UserTable() {
                             <td>{usuario.rol}</td>
                             <td>
                                 <div className="button-row-table">
-                                    <button onClick={() => editarUsuario(usuario)}>
+                                    <button onClick={() => onEdit(usuario)}>
                                     <FaEdit />
                                     </button>
-                                    <button onClick={() => eliminarUsuario(usuario.id)}>
+                                    <button onClick={() => onDelete(usuario.id)}>
                                     <FaTrash />
                                     </button>
                                 </div>

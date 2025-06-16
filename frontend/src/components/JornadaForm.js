@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { FaClock } from 'react-icons/fa';
 import api from '../api';
 import '../styles/ControlPanelStyle.css';
@@ -8,8 +8,21 @@ export default function JornadaForm({ onAdd }) {
     const [salida, setSalida] = useState('');
     const [mensaje, setMensaje] = useState('');
 
+    useEffect(() => {
+        if (!entrada) {
+            setSalida('');
+            setMensaje('');
+        }
+    }, [entrada]);
+
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setMensaje('');
+
+        if (salida <= entrada) {
+            setMensaje('Error: La hora de salida debe ser posterior a la de entrada');
+            return;
+        }
 
         try {
             const res = await api.post('/jornadas', {
@@ -29,7 +42,7 @@ export default function JornadaForm({ onAdd }) {
     return (
         <form className="form-panel" onSubmit={handleSubmit}>
             <h3>Registrar Jornada</h3>
-            {mensaje && <p>{mensaje}</p>}
+            {mensaje && (<p style={{ color: mensaje.includes('Error') ? 'red' : 'white' }}>{mensaje}</p>)}
 
             <div className="input-form">
                 <div className="input-time">
@@ -40,7 +53,7 @@ export default function JornadaForm({ onAdd }) {
 
                 <div className="input-time">
                     <label htmlFor="salida">Hora de salida</label>
-                    <input type="time" placeholder="Hora de salida" value={salida} onChange={(e) => setSalida(e.target.value)} required />
+                    <input type="time" placeholder="Hora de salida" value={salida} onChange={(e) => setSalida(e.target.value)} disabled={!entrada}   required />
                     <FaClock className="icon" />
                 </div>
             </div>
