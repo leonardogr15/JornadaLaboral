@@ -1,6 +1,7 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { findUserByEmail } = require('../models/usuarioModel');
+const { JWT_ALGORITHM, JWT_EXPIRES_IN, getJwtSecret } = require('../config/security');
 
 exports.login = async (req, res) => {
   const { email, password } = req.body;
@@ -12,8 +13,9 @@ exports.login = async (req, res) => {
     const passwordMatch = await bcrypt.compare(password, user.password);
     if (!passwordMatch) return res.status(401).json({ message: 'Contraseña incorrecta' });
 
-    const token = jwt.sign({ id: user.id, rol: user.rol }, process.env.JWT_SECRET, {
-      expiresIn: '8h',
+    const token = jwt.sign({ id: user.id, rol: user.rol }, getJwtSecret(), {
+      algorithm: JWT_ALGORITHM,
+      expiresIn: JWT_EXPIRES_IN,
     });
 
     res.json({ token });

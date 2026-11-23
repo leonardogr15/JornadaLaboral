@@ -1,7 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const authMiddleware = require('../middlewares/authMiddleware');
+const { authenticate, requireAdmin } = require('../middlewares/authMiddleware');
 const {
+  obtenerPerfil,
   listarUsuarios,
   obtenerUsuario,
   crearUsuario,
@@ -9,8 +10,13 @@ const {
   eliminarUsuario
 } = require('../controllers/usuarioController');
 
+router.use(authenticate);
 
-router.use(authMiddleware);
+// Any authenticated user may read (never modify) their own profile.
+router.get('/me', obtenerPerfil);
+
+// User management is admin-only.
+router.use(requireAdmin);
 
 router.get('/', listarUsuarios);
 router.get('/:id', obtenerUsuario);

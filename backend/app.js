@@ -7,6 +7,15 @@ const userRoutes    = require('./routes/usuarioRoutes');
 const app = express();
 
 require('dotenv').config();
+const { getJwtSecret } = require('./config/security');
+
+// Fail fast on an insecure configuration.
+try {
+  getJwtSecret();
+} catch (err) {
+  console.error(err.message);
+  process.exit(1);
+}
 
 connectMongo();
 
@@ -15,6 +24,12 @@ app.use(express.json());
 app.use('/api/auth', authRoutes);
 app.use('/api/jornadas', jornadaRoutes);
 app.use('/api/usuarios', userRoutes);
+
+// eslint-disable-next-line no-unused-vars
+app.use((err, req, res, next) => {
+  console.error(err);
+  res.status(500).json({ error: 'Error interno del servidor' });
+});
 
 
 const PORT = process.env.PORT || 5000;
