@@ -16,9 +16,7 @@ Jornada Laboral es una aplicación web para el control de la jornada laboral. Pe
    -Frontend: [http://localhost:3000](http://localhost:3000)
    -Backend/API: [http://localhost:5000/api](http://localhost:5000/api)
 
-4. Credenciales iniciales para el login:
-   Usuario: admin@ejemplo.com
-   Contraseña: 123
+4. Login: copy `.env.example` to `.env` before step 2. The demo admin is created on first start with `DEMO_ADMIN_EMAIL` / `DEMO_ADMIN_PASSWORD` from your `.env`; no default password is published.
 
 5. Para detener y eliminar todos los contenedores:
    docker-compose down

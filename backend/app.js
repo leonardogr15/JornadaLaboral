@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const connectMongo = require('./config/db_mongo');
+const { bootstrapDatabase } = require('./db/bootstrap');
 const authRoutes = require('./routes/authRoutes');
 const jornadaRoutes = require('./routes/jornadaRoutes');
 const userRoutes    = require('./routes/usuarioRoutes');
@@ -17,8 +18,6 @@ try {
   process.exit(1);
 }
 
-connectMongo();
-
 app.use(cors());
 app.use(express.json());
 app.use('/api/auth', authRoutes);
@@ -33,6 +32,16 @@ app.use((err, req, res, next) => {
 
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`Servidor backend escuchando en el puerto ${PORT}`);
-});
+
+(async () => {
+  try {
+    await connectMongo();
+    await bootstrapDatabase();
+  } catch (err) {
+    console.error('Startup failed:', err.message);
+    process.exit(1);
+  }
+  app.listen(PORT, () => {
+    console.log(`Servidor backend escuchando en el puerto ${PORT}`);
+  });
+})();
