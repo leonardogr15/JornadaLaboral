@@ -1,6 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const { authenticate, requireAdmin } = require('../middlewares/authMiddleware');
+const validate = require('../middlewares/validate');
+const { idParams, createUserBody, updateUserBody } = require('../validation/schemas');
 const {
   obtenerPerfil,
   listarUsuarios,
@@ -19,9 +21,9 @@ router.get('/me', obtenerPerfil);
 router.use(requireAdmin);
 
 router.get('/', listarUsuarios);
-router.get('/:id', obtenerUsuario);
-router.post('/', crearUsuario);
-router.put('/:id', actualizarUsuario);
-router.delete('/:id', eliminarUsuario);
+router.get('/:id', validate({ params: idParams }), obtenerUsuario);
+router.post('/', validate({ body: createUserBody }), crearUsuario);
+router.put('/:id', validate({ params: idParams, body: updateUserBody }), actualizarUsuario);
+router.delete('/:id', validate({ params: idParams }), eliminarUsuario);
 
 module.exports = router;

@@ -1,66 +1,40 @@
 const { findAllUsers, findUserById, createUser, updateUser, deleteUser } = require('../models/usuarioModel');
+const HttpError = require('../utils/httpError');
 
-function sendError(res, err, fallback) {
-  if (err.status) return res.status(err.status).json({ error: err.message });
-  console.error(err);
-  return res.status(500).json({ error: fallback });
-}
+const NOT_FOUND = 'Usuario no encontrado';
+
+// Express 5 forwards rejected promises to the error handler, so handlers only
+// throw; status mapping lives in middlewares/errorHandler.js.
 
 exports.obtenerPerfil = async (req, res) => {
-  try {
-    const user = await findUserById(req.user.id);
-    if (!user) return res.status(404).json({ error: 'Usuario no encontrado' });
-    res.json(user);
-  } catch (err) {
-    sendError(res, err, 'Error al obtener usuario');
-  }
+  const user = await findUserById(req.user.id);
+  if (!user) throw new HttpError(404, NOT_FOUND);
+  res.json(user);
 };
 
 exports.listarUsuarios = async (req, res) => {
-  try {
-    const usuarios = await findAllUsers();
-    res.json(usuarios);
-  } catch (err) {
-    sendError(res, err, 'Error al listar usuarios');
-  }
+  res.json(await findAllUsers());
 };
 
 exports.obtenerUsuario = async (req, res) => {
-  try {
-    const user = await findUserById(req.params.id);
-    if (!user) return res.status(404).json({ error: 'Usuario no encontrado' });
-    res.json(user);
-  } catch (err) {
-    sendError(res, err, 'Error al obtener usuario');
-  }
+  const user = await findUserById(req.params.id);
+  if (!user) throw new HttpError(404, NOT_FOUND);
+  res.json(user);
 };
 
 exports.crearUsuario = async (req, res) => {
-  const { nombre, email, password, rol } = req.body;
-  try {
-    const nuevo = await createUser({ nombre, email, password, rol });
-    res.status(201).json(nuevo);
-  } catch (err) {
-    sendError(res, err, 'Error al crear usuario');
-  }
+  const nuevo = await createUser(req.body);
+  res.status(201).json(nuevo);
 };
 
 exports.actualizarUsuario = async (req, res) => {
-  try {
-    const actualizado = await updateUser(req.params.id, req.body);
-    if (!actualizado) return res.status(404).json({ error: 'Usuario no encontrado' });
-    res.json(actualizado);
-  } catch (err) {
-    sendError(res, err, 'Error al actualizar usuario');
-  }
+  const actualizado = await updateUser(req.params.id, req.body);
+  if (!actualizado) throw new HttpError(404, NOT_FOUND);
+  res.json(actualizado);
 };
 
 exports.eliminarUsuario = async (req, res) => {
-  try {
-    const removed = await deleteUser(req.params.id);
-    if (!removed) return res.status(404).json({ error: 'Usuario no encontrado' });
-    res.status(204).send();
-  } catch (err) {
-    sendError(res, err, 'Error al eliminar usuario');
-  }
+  const removed = await deleteUser(req.params.id);
+  if (!removed) throw new HttpError(404, NOT_FOUND);
+  res.status(204).send();
 };

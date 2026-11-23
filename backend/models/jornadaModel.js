@@ -4,7 +4,7 @@ const jornadaSchema = new mongoose.Schema({
     horaEntrada: { type: String, required: true },
     horaSalida: { type: String, required: true },
     fecha: { type: Date,   default: Date.now },
-    usuarioId: { type: Number, required: true },
+    usuarioId: { type: Number, required: true, index: true },
     horasTrabajadas: { type: Number, required: true }
 },
 {

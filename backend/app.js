@@ -1,47 +1,51 @@
 const express = require('express');
 const cors = require('cors');
-const connectMongo = require('./config/db_mongo');
-const { bootstrapDatabase } = require('./db/bootstrap');
+const helmet = require('helmet');
+
 const authRoutes = require('./routes/authRoutes');
 const jornadaRoutes = require('./routes/jornadaRoutes');
-const userRoutes    = require('./routes/usuarioRoutes');
-const app = express();
+const userRoutes = require('./routes/usuarioRoutes');
+const healthRoutes = require('./routes/healthRoutes');
+const { notFound, errorHandler } = require('./middlewares/errorHandler');
 
-require('dotenv').config();
-const { getJwtSecret } = require('./config/security');
-
-// Fail fast on an insecure configuration.
-try {
-  getJwtSecret();
-} catch (err) {
-  console.error(err.message);
-  process.exit(1);
+/** Parses CORS_ORIGINS ("https://a.com,https://b.com") into an allowlist. */
+function parseOrigins(value) {
+  return (value || '')
+    .split(',')
+    .map((origin) => origin.trim())
+    .filter(Boolean);
 }
 
-app.use(cors());
-app.use(express.json());
-app.use('/api/auth', authRoutes);
-app.use('/api/jornadas', jornadaRoutes);
-app.use('/api/usuarios', userRoutes);
+/**
+ * Builds the Express application without opening a port or a database
+ * connection, so it can be imported by tests (see server.js for startup).
+ */
+function createApp() {
+  const app = express();
+  const allowedOrigins = parseOrigins(process.env.CORS_ORIGINS);
 
-// eslint-disable-next-line no-unused-vars
-app.use((err, req, res, next) => {
-  console.error(err);
-  res.status(500).json({ error: 'Error interno del servidor' });
-});
+  app.disable('x-powered-by');
+  app.set('trust proxy', process.env.TRUST_PROXY === 'true' ? 1 : false);
 
+  app.use(helmet());
+  app.use(
+    cors({
+      // Requests without an Origin header (curl, server-to-server) are allowed;
+      // browsers are restricted to the allowlist.
+      origin: (origin, callback) => callback(null, !origin || allowedOrigins.includes(origin)),
+    })
+  );
+  app.use(express.json({ limit: '10kb' }));
 
-const PORT = process.env.PORT || 5000;
+  app.use('/api/health', healthRoutes);
+  app.use('/api/auth', authRoutes);
+  app.use('/api/jornadas', jornadaRoutes);
+  app.use('/api/usuarios', userRoutes);
 
-(async () => {
-  try {
-    await connectMongo();
-    await bootstrapDatabase();
-  } catch (err) {
-    console.error('Startup failed:', err.message);
-    process.exit(1);
-  }
-  app.listen(PORT, () => {
-    console.log(`Servidor backend escuchando en el puerto ${PORT}`);
-  });
-})();
+  app.use(notFound);
+  app.use(errorHandler);
+
+  return app;
+}
+
+module.exports = { createApp, parseOrigins };

@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-require('dotenv').config();
 
 /**
  * Connects to MongoDB. Credentials are passed as options (not embedded in the
