@@ -122,7 +122,7 @@ Status codes: `400` validation, `401` missing/invalid token or credentials, `403
 
 ## Security measures
 
-- Authorization on the server: `authenticate` verifies the JWT, `requireRole('admin')` reloads the caller's role from PostgreSQL, so a demoted or deleted account loses access immediately. A user's own role cannot be changed by themselves.
+- Authorization on the server: `authenticate` verifies the JWT and reloads the account from PostgreSQL on every request, and `requireRole('admin')` checks that current role. A deleted account loses access to every route immediately, and a demoted admin loses admin routes immediately. A user's own role cannot be changed by themselves.
 - Last-admin protection inside a transaction that locks the admin rows.
 - JWT algorithm pinned to HS256 for signing and verification; startup fails if `JWT_SECRET` is missing or shorter than 32 characters.
 - Passwords hashed with bcrypt; login returns the same message and performs one bcrypt comparison whether or not the email exists (no user enumeration).
@@ -135,7 +135,9 @@ Status codes: `400` validation, `401` missing/invalid token or credentials, `403
 ## Known limitations and roadmap
 
 - The JWT is stored in `localStorage`, which is readable by any script on the page (XSS risk). Planned: httpOnly, `SameSite` cookie with CSRF protection.
-- No refresh tokens or server-side revocation; tokens are valid for 8 hours (role changes are still enforced immediately).
+- No refresh tokens or server-side revocation list; tokens are valid for 8 hours (account deletion and role changes are still enforced immediately because every request reloads the account).
+- Deleting a user keeps that user's shift records in MongoDB (ids are never reused, so they are not exposed to other users).
+- The frontend has no Content-Security-Policy yet; the CRA build inlines its runtime chunk, so adding one needs `INLINE_RUNTIME_CHUNK=false`.
 - The admin UI is only hidden for normal users by decoding the token in the browser; this is cosmetic, the server enforces access.
 - Shifts cannot be edited or deleted yet, and overlapping shifts on the same day are not detected.
 - The login rate limiter uses in-memory storage, so limits are per instance.
