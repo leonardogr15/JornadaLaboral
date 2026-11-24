@@ -2,11 +2,9 @@ import { useState, useEffect } from 'react';
 import { FaUser, FaLock } from 'react-icons/fa';
 import { IoIosArrowDown } from "react-icons/io";
 import '../styles/ControlPanelStyle.css';
-import { useNavigate } from 'react-router-dom';
 
 export default function UserForm({ editingUser, onCreate, onUpdate }) {
     const [nuevoUsuario, setNuevoUsuario] = useState({ id: null, nombre: '', email: '', password: '', rol: 'user'});
-    const navigate = useNavigate();
 
     useEffect(() => {
         if (editingUser) {
@@ -61,9 +59,6 @@ export default function UserForm({ editingUser, onCreate, onUpdate }) {
                 </div>
 
                 <div className="buttom-row">
-                    {/* <button type="button" className="back-btn" onClick={() => navigate('/dashboard')}>
-                        <FaArrowLeft className="back-icon" /> Volver
-                    </button> */}
                     <button type="submit">{nuevoUsuario.id ? 'Actualizar' : 'Crear'}</button>
                 </div>
             </form>

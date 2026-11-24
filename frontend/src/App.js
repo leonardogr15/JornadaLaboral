@@ -8,18 +8,18 @@ function useAutoLogout(inactivityMs = 5 * 60 * 1000) {
   const navigate = useNavigate();
   const timerId = useRef(null);
 
-  const doLogout = () => {
-    clearTimeout(timerId.current);
-    localStorage.removeItem('token');
-    navigate('/', { replace: true });
-  };
-
-  const resetTimer = () => {
-    clearTimeout(timerId.current);
-    timerId.current = setTimeout(doLogout, inactivityMs);
-  };
-
   useEffect(() => {
+    const doLogout = () => {
+      clearTimeout(timerId.current);
+      localStorage.removeItem('token');
+      navigate('/', { replace: true });
+    };
+
+    const resetTimer = () => {
+      clearTimeout(timerId.current);
+      timerId.current = setTimeout(doLogout, inactivityMs);
+    };
+
     const events = ['mousemove', 'mousedown', 'keydown', 'touchstart', 'scroll'];
     events.forEach(ev => window.addEventListener(ev, resetTimer));
     resetTimer();
@@ -27,7 +27,7 @@ function useAutoLogout(inactivityMs = 5 * 60 * 1000) {
       clearTimeout(timerId.current);
       events.forEach(ev => window.removeEventListener(ev, resetTimer));
     };
-  }, []);
+  }, [inactivityMs, navigate]);
 }
 
 const PrivateRoute = ({ children }) => {
