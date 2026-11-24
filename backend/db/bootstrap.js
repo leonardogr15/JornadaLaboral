@@ -25,7 +25,7 @@ async function ensureSchema() {
  * Returns true when an admin was created.
  */
 async function seedDemoAdmin({
-  email = process.env.DEMO_ADMIN_EMAIL || 'admin@example.com',
+  email = (process.env.DEMO_ADMIN_EMAIL || 'admin@example.com').trim().toLowerCase(),
   password = process.env.DEMO_ADMIN_PASSWORD,
   nombre = 'Administrador',
 } = {}) {

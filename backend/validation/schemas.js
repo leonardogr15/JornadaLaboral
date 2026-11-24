@@ -10,7 +10,7 @@ const passwordSchema = z.string().min(8).max(72);
 const nombreSchema = z.string().trim().min(1).max(100);
 
 const idParams = z.object({
-  id: z.coerce.number().int().positive(),
+  id: z.coerce.number().int().positive().max(2147483647), // PostgreSQL INTEGER range
 });
 
 const loginBody = z.object({

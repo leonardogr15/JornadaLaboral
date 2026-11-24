@@ -81,3 +81,19 @@ describe('GET /api/jornadas', () => {
     expect((await request(app).get('/api/jornadas')).status).toBe(401);
   });
 });
+
+describe('token of an account that no longer exists', () => {
+  it('is rejected on shift routes as soon as the account is deleted (401)', async () => {
+    const del = await request(app).delete(`/api/usuarios/${user.id}`).set('Authorization', `Bearer ${adminToken}`);
+    expect(del.status).toBe(204);
+    expect((await list(userToken)).status).toBe(401);
+    expect((await post(userToken, { horaEntrada: '08:00', horaSalida: '09:00' })).status).toBe(401);
+  });
+});
+
+describe('id parameters', () => {
+  it('rejects ids outside the PostgreSQL integer range with 400, not 500', async () => {
+    const res = await request(app).get('/api/usuarios/9999999999').set('Authorization', `Bearer ${adminToken}`);
+    expect(res.status).toBe(400);
+  });
+});
