@@ -3,6 +3,19 @@
 A containerized work-shift tracker: employees log their daily entry and exit times, and administrators manage user accounts, all behind JWT authentication with role-based access enforced on the server.
 
 [![CI](https://github.com/leonardogr15/JornadaLaboral/actions/workflows/ci.yml/badge.svg)](https://github.com/leonardogr15/JornadaLaboral/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
+![Node.js 22](https://img.shields.io/badge/Node.js-22-339933)
+![React 19](https://img.shields.io/badge/React-19-149ECA)
+
+What it shows technically: an Express 5 API whose authorization is enforced on the server and tested against real PostgreSQL and MongoDB, polyglot persistence, and a React + Vite frontend served behind a strict Content-Security-Policy.
+
+![An employee signs in, enters today's entry and exit times and the shift appears in the history](docs/images/demo.gif)
+
+| Sign in | Shift history | User management (admin) |
+|---|---|---|
+| ![Sign-in page](docs/images/login.jpg) | ![An employee's shift history with the hours worked per day](docs/images/shifts.jpg) | ![Admin page listing users with their roles and edit and delete actions](docs/images/users.jpg) |
+
+*Screenshots and GIF come from the running app with fictional data (see [Regenerating the README media](#regenerating-the-readme-media)).*
 
 The UI is in Spanish (the original target users); code comments, docs and commits are in English.
 
@@ -19,11 +32,11 @@ The UI is in Spanish (the original target users); code comments, docs and commit
 
 | Layer | Technology |
 |---|---|
-| Frontend | React 19 (Create React App), React Router 7, Axios, served by unprivileged nginx |
+| Frontend | React 19, Vite, React Router 7, Axios; self-hosted fonts; served by unprivileged nginx with a strict CSP |
 | API | Node.js 22, Express 5, zod, jsonwebtoken, bcrypt, helmet, express-rate-limit |
 | Users | PostgreSQL 16 (`pg`) |
 | Work shifts | MongoDB 7 (Mongoose 8) |
-| Tests | Jest + Supertest (integration, real databases), React Testing Library |
+| Tests | Jest + Supertest (API, real databases), Vitest + React Testing Library, Playwright (end-to-end), ESLint |
 | Delivery | Docker Compose, GitHub Actions, gitleaks |
 
 ## Architecture
@@ -91,15 +104,39 @@ docker compose -f docker-compose.test.yml run --rm --build backend-test
 docker compose -f docker-compose.test.yml down
 ```
 
-Frontend tests:
+Frontend lint, unit tests and build:
 
 ```bash
 cd frontend
 npm ci
-CI=true npm test
+npm run lint     # ESLint, no warnings allowed
+npm test         # Vitest
+npm run build    # Vite, output in dist/
 ```
 
-The backend suite covers login (including generic error messages and rate limiting), forged tokens (`alg: none`, wrong key), admin CRUD, **a normal user getting 403 on every user-management action including escalating their own role**, 401 without a token, last-admin protection, shift validation and per-user shift isolation. GitHub Actions runs both suites, a Docker Compose build with a health smoke test, and a gitleaks scan of the full history.
+End-to-end checks (Playwright, desktop and mobile) run against the Compose stack. They check the Content-Security-Policy on every route, an admin flow with no CSP violation or console error, and that a normal user cannot reach user management even after editing the token in the browser:
+
+```bash
+cd frontend
+npx playwright install chromium   # once
+E2E_BASE_URL=http://localhost:3000 E2E_API_URL=http://localhost:5000/api   DEMO_ADMIN_PASSWORD=<value from .env> npm run e2e
+```
+
+The backend suite covers login (including generic error messages and rate limiting), forged tokens (`alg: none`, wrong key), admin CRUD, **a normal user getting 403 on every user-management action including escalating their own role**, 401 without a token, last-admin protection, shift validation and per-user shift isolation. GitHub Actions runs the backend suite, the frontend lint, tests and build, a Docker Compose build with a health smoke test, and a gitleaks scan of the full history; the end-to-end checks run locally.
+
+Latest published results, from [CI run 45546697793](https://github.com/leonardogr15/JornadaLaboral/actions/runs/45546697793) on `main` (commit `65f4005`, 2026-11-25, before the move to Vite): backend 50 passed, frontend 6 passed, Compose smoke test healthy, gitleaks clean. The badge above shows the current status.
+
+### Regenerating the README media
+
+On a freshly started stack (`docker compose down -v` deletes the local databases, then `docker compose up -d --build`):
+
+```bash
+cd frontend
+DOCS=1 E2E_BASE_URL=http://localhost:3000 E2E_API_URL=http://localhost:5000/api   DEMO_ADMIN_PASSWORD=<value from .env> npm run e2e
+cd .. && sh scripts/make_demo_media.sh   # builds docs/images/demo.gif with a pinned FFmpeg image
+```
+
+The spec creates fictional users and shifts through the API and captures real screenshots; the GIF is assembled from them by an FFmpeg container from LinuxServer.io pinned by version and digest, used only on the developer's machine.
 
 ## API
 
@@ -128,6 +165,8 @@ Status codes: `400` validation, `401` missing/invalid token or credentials, `403
 - Passwords hashed with bcrypt; login returns the same message and performs one bcrypt comparison whether or not the email exists (no user enumeration).
 - Input validation with zod on every body and id parameter; JSON body limited to 10 kB.
 - helmet security headers, rate limit on failed logins, CORS allowlist from `CORS_ORIGINS`.
+- Frontend served with a strict Content-Security-Policy: `script-src 'self'`, `style-src 'self'`, `connect-src` limited to the API origin, `frame-ancestors 'none'`, and no `unsafe-inline`, `unsafe-eval` or wildcards. Fonts are self-hosted, so the page loads nothing from third parties.
+- `VITE_*` variables are compiled into the public bundle, so only the API URL uses that prefix; secrets stay on the server.
 - No credentials in the repository: Compose reads everything from an untracked `.env`; MongoDB requires authentication and the API uses a least-privilege `readWrite` user.
 - Containers run as non-root users; databases are not published to the host.
 - Secret scanning with gitleaks in CI. A development `.env` committed early in the history was removed; its values are treated as compromised (see [`.gitleaksignore`](.gitleaksignore)).
@@ -137,12 +176,11 @@ Status codes: `400` validation, `401` missing/invalid token or credentials, `403
 - The JWT is stored in `localStorage`, which is readable by any script on the page (XSS risk). Planned: httpOnly, `SameSite` cookie with CSRF protection.
 - No refresh tokens or server-side revocation list; tokens are valid for 8 hours (account deletion and role changes are still enforced immediately because every request reloads the account).
 - Deleting a user keeps that user's shift records in MongoDB (ids are never reused, so they are not exposed to other users).
-- The frontend has no Content-Security-Policy yet; the CRA build inlines its runtime chunk, so adding one needs `INLINE_RUNTIME_CHUNK=false`.
 - The admin UI is only hidden for normal users by decoding the token in the browser; this is cosmetic, the server enforces access.
 - Shifts cannot be edited or deleted yet, and overlapping shifts on the same day are not detected.
 - The login rate limiter uses in-memory storage, so limits are per instance.
 - Domain identifiers (`usuarios`, `jornadas`, `rol`) are Spanish to match the UI and existing data.
-- Planned: OpenAPI specification, ESLint in CI, shift editing, reports per date range, migration tool instead of the startup schema bootstrap.
+- Planned: OpenAPI specification, shift editing, reports per date range, migration tool instead of the startup schema bootstrap.
 
 ## License
 
