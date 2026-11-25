@@ -25,21 +25,23 @@ test('an admin signs in, records a shift once and manages users, with no CSP err
   await page.getByLabel('Hora de entrada').fill('08:00');
   await page.getByLabel('Hora de salida').fill('16:30');
   const saved = page.waitForResponse((r) => r.url().endsWith('/api/jornadas') && r.request().method() === 'POST');
-  await page.getByRole('button', { name: 'Guardar' }).click();
+  await page.getByRole('button', { name: 'Guardar jornada' }).click();
   expect((await saved).status()).toBe(201);
-  await expect(page.getByText('Hora registrada exitosamente')).toBeVisible();
+  await expect(page.getByRole('status').filter({ hasText: 'Jornada registrada: 8 h 30 min.' })).toBeVisible();
   await expect(page.locator('.jornada-table tbody tr')).toHaveCount(rowsBefore + 1);
 
-  await page.getByRole('button', { name: /Configuración/ }).click();
+  await page.getByRole('link', { name: 'Usuarios' }).click();
   await expect(page).toHaveURL(/\/configuracion$/);
   const email = `marta.${Date.now()}@example.com`;
-  await page.getByPlaceholder('Nombre').fill('Marta Díaz');
-  await page.getByPlaceholder('Correo electrónico').fill(email);
-  await page.getByPlaceholder('Contraseña').fill(`pw-${crypto.randomUUID()}`);
-  await page.getByRole('button', { name: 'Crear' }).click();
-  await expect(page.getByRole('cell', { name: email })).toBeVisible();
+  await page.getByRole('button', { name: 'Nuevo usuario' }).click();
+  await page.getByLabel('Nombre').fill('Marta Díaz');
+  await page.getByLabel('Correo electrónico').fill(email);
+  await page.getByLabel('Contraseña').fill(`pw-${crypto.randomUUID()}`);
+  await page.getByRole('button', { name: 'Crear usuario' }).click();
+  await expect(page.getByText('Usuario «Marta Díaz» creado.')).toBeVisible();
+  await expect(page.getByText(email)).toBeVisible();
 
-  await page.getByRole('button', { name: /Volver/ }).click();
+  await page.getByRole('link', { name: 'Mis jornadas' }).click();
   await page.getByRole('button', { name: /Cerrar sesión/ }).click();
   await expect(page.getByRole('heading', { name: 'Iniciar sesión' })).toBeVisible();
   expect(problems).toEqual([]);
@@ -49,8 +51,8 @@ test('a normal user cannot reach user management, even by tampering with the fro
   const problems = await watchForProblems(page);
   const user = await createNormalUser(request, 'lucia');
   await login(page, user.email, user.password);
-  await expect(page.getByRole('heading', { name: 'Registrar Jornada' })).toBeVisible();
-  await expect(page.getByRole('button', { name: /Configuración/ })).toHaveCount(0);
+  await expect(page.getByRole('heading', { name: 'Registrar jornada' })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Usuarios' })).toHaveCount(0);
 
   // 1. Opening the admin page directly: the API refuses (403) and no user list is shown.
   const refused = page.waitForResponse((r) => r.url().endsWith('/api/usuarios') && r.request().method() === 'GET');

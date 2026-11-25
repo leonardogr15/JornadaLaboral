@@ -1017,3 +1017,9 @@ select {
 .status-slot:empty {
   margin-top: calc(-1 * var(--space-6));
 }
+
+/* Long addresses wrap instead of widening the page. */
+.cell-secondary,
+.cell-primary {
+  overflow-wrap: anywhere;
+}
