@@ -1,4 +1,4 @@
-# Rendered by the nginx image at startup (envsubst).
+# Rendered by the nginx image at startup (envsubst): ${API_ORIGIN} is the only variable.
 server {
     listen 8080;
     server_name _;
@@ -6,9 +6,14 @@ server {
     index index.html;
 
     server_tokens off;
+    # Strict policy: scripts, styles, fonts and images only from this origin, API calls only to
+    # the configured backend origin. No 'unsafe-inline', no 'unsafe-eval', no wildcards.
+    # React's style={{...}} props are applied through the CSSOM, which style-src does not block.
+    add_header Content-Security-Policy "default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'self' ${API_ORIGIN}; manifest-src 'self'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'; object-src 'none'" always;
     add_header X-Content-Type-Options "nosniff" always;
     add_header X-Frame-Options "DENY" always;
     add_header Referrer-Policy "strict-origin-when-cross-origin" always;
+    add_header Permissions-Policy "camera=(), microphone=(), geolocation=()" always;
 
     # Single-page app: unknown paths (e.g. /dashboard on reload) serve index.html.
     location / {

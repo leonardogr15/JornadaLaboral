@@ -10,7 +10,8 @@ ENV VITE_API_URL=$VITE_API_URL
 RUN npm run build
 
 # Static files served by an unprivileged nginx (listens on 8080, non-root).
-# The official image renders /etc/nginx/templates/*.template with envsubst at startup.
+# The official image renders /etc/nginx/templates/*.template with envsubst at startup,
+# which puts the API origin into the Content-Security-Policy (connect-src).
 FROM nginxinc/nginx-unprivileged:stable-alpine
 ENV API_ORIGIN=http://localhost:5000
 COPY nginx.conf.template /etc/nginx/templates/default.conf.template
