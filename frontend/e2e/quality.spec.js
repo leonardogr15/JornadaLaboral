@@ -109,15 +109,18 @@ test('the main flow works with the keyboard alone', async ({ page, request }) =>
   // Skip link first, then the header; the form is reachable and submits with Enter.
   await page.keyboard.press('Tab');
   await expect(page.getByRole('link', { name: 'Saltar al contenido' })).toBeFocused();
-  // Headless Chromium shows a 12-hour time field here, so each time ends with its AM/PM letter.
-  await page.getByLabel('Hora de entrada').focus();
-  await page.keyboard.type('0800A');
+  // The native time field follows the OS locale: 24-hour, or 12-hour with an AM/PM segment.
+  const entrada = page.getByLabel('Hora de entrada');
+  await entrada.focus();
+  await page.keyboard.type('0800');
+  const docesHoras = (await entrada.inputValue()) === '';
+  if (docesHoras) await page.keyboard.type('A');
   // The native time field has its own stops (segments, picker); Tab moves on within a few presses.
   for (let i = 0; i < 3 && !(await page.getByLabel('Hora de salida').evaluate((el) => el === document.activeElement)); i++) {
     await page.keyboard.press('Tab');
   }
   await expect(page.getByLabel('Hora de salida')).toBeFocused();
-  await page.keyboard.type('0400P');
+  await page.keyboard.type(docesHoras ? '0400P' : '1600');
   await page.keyboard.press('Enter');
   await expect(page.getByRole('status').filter({ hasText: 'Jornada registrada: 8 h.' })).toBeVisible();
 });

@@ -16,6 +16,7 @@ export default defineConfig({
     baseURL: process.env.E2E_BASE_URL ?? 'http://localhost:3000',
     // Traces would record login requests (passwords, tokens), so none are kept.
     trace: 'off',
+    locale: 'es-ES', // like the app's users (the native time field still follows the OS locale)
   },
   projects: [
     { name: 'desktop', use: { ...devices['Desktop Chrome'] } },
