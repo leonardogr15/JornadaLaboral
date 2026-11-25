@@ -195,10 +195,10 @@
 }
 
 
-/* Page width: 40% of the window on desktop as before, full width on small screens. */
+/* Page width: wide enough for the shift table on desktop, full width on small screens. */
 .panel-page {
     padding: 2rem;
-    width: 40%;
+    width: min(100%, 760px);
 }
 
 @media (max-width: 900px) {

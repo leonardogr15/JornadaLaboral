@@ -24,7 +24,7 @@ export default [
   },
   {
     files: ['**/*.test.{js,jsx}', 'src/setupTests.js'],
-    languageOptions: { globals: { ...globals.browser, ...globals.vitest } },
+    languageOptions: { globals: { ...globals.browser, ...globals.vitest, process: 'writable' } },
   },
   {
     files: ['*.config.js', 'e2e/**/*.js'],

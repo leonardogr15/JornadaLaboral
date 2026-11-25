@@ -32,7 +32,11 @@ test('registers a shift with a single API call and adds it to the history', asyn
 
   expect(await screen.findByText(/hora registrada exitosamente/i)).toBeInTheDocument();
   expect(api.post).toHaveBeenCalledTimes(1);
-  expect(api.post).toHaveBeenCalledWith('/jornadas', { horaEntrada: '08:00', horaSalida: '16:30' });
+  expect(api.post).toHaveBeenCalledWith('/jornadas', {
+    horaEntrada: '08:00',
+    horaSalida: '16:30',
+    fecha: expect.stringMatching(/^\d{4}-\d{2}-\d{2}$/),
+  });
   const rows = within(screen.getByRole('table')).getAllByRole('row');
   expect(rows).toHaveLength(2); // header + the new shift
   expect(within(rows[1]).getByText('8.5')).toBeInTheDocument();

@@ -15,7 +15,10 @@ export default function JornadaList({ jornadas }) {
           <tbody>
             {jornadas.map((j, index) => {
               const dateObj = new Date(j.fecha);
+              // Shift dates are calendar days stored as midnight UTC: format them in UTC,
+              // or users west of Greenwich would see the previous day.
               const fechaFormateada = dateObj.toLocaleDateString('es-ES', {
+                timeZone: 'UTC',
                 day:   '2-digit',
                 month: '2-digit',
                 year:  'numeric'

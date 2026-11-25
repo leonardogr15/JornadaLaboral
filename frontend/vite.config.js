@@ -13,6 +13,7 @@ export default defineConfig({
   },
   test: {
     environment: 'jsdom',
+    include: ['src/**/*.test.{js,jsx}'], // e2e/ belongs to Playwright
     globals: true,
     setupFiles: './src/setupTests.js',
     css: false,

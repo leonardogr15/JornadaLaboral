@@ -3,6 +3,13 @@ import { FaClock } from 'react-icons/fa';
 import api from '../api';
 import '../styles/ControlPanelStyle.css';
 
+/** Today's date in the user's time zone, as the API expects it (YYYY-MM-DD). */
+function hoyLocal() {
+    const d = new Date();
+    const pad = (n) => String(n).padStart(2, '0');
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+}
+
 export default function JornadaForm({ onAdd }) {
     const [entrada, setEntrada] = useState('');
     const [salida, setSalida] = useState('');
@@ -30,6 +37,9 @@ export default function JornadaForm({ onAdd }) {
             const res = await api.post('/jornadas', {
                 horaEntrada: entrada,
                 horaSalida: salida,
+                // Sent explicitly so the shift is filed under the user's local day,
+                // not the server's UTC day.
+                fecha: hoyLocal(),
             });
 
             onAdd(res.data);
