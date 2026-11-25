@@ -27,7 +27,7 @@ export default function PanelPage() {
   };
 
   return (
-    <div style={{ padding: '2rem', width:'40%' }}>
+    <div className="panel-page">
       <div className="panel-header">
 
         <button className="logout-btn" onClick={cerrarSesion}>

@@ -194,3 +194,32 @@
     color: #fff;
 }
 
+
+/* Page width: 40% of the window on desktop as before, full width on small screens. */
+.panel-page {
+    padding: 2rem;
+    width: 40%;
+}
+
+@media (max-width: 900px) {
+    .panel-page {
+        width: 100%;
+        padding: 1rem;
+    }
+
+    .form-panel {
+        padding: 20px 12px;
+    }
+
+    .input-form {
+        flex-wrap: wrap;
+    }
+
+    .input-time {
+        width: 100%;
+    }
+
+    .input-row-user {
+        grid-template-columns: 1fr;
+    }
+}
