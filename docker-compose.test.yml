@@ -1,0 +1,53 @@
+# Backend integration tests against real, throwaway PostgreSQL and MongoDB.
+# Self-contained (no .env needed) and isolated from the dev stack:
+#
+#   docker compose -f docker-compose.test.yml run --rm --build backend-test
+#   docker compose -f docker-compose.test.yml down
+#
+# The values below are disposable test-only settings, not real credentials.
+name: jornadalaboral-test
+
+services:
+  postgres-test:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: test
+      POSTGRES_PASSWORD: test
+      POSTGRES_DB: jornada_test
+    tmpfs:
+      - /var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U test -d jornada_test"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+
+  mongo-test:
+    image: mongo:7.0
+    tmpfs:
+      - /data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping').ok"]
+      interval: 3s
+      timeout: 5s
+      retries: 20
+
+  backend-test:
+    build:
+      context: ./backend
+      target: test
+    environment:
+      NODE_ENV: test
+      PGHOST: postgres-test
+      PGPORT: 5432
+      PGDATABASE: jornada_test
+      PGUSER: test
+      PGPASSWORD: test
+      MONGO_URI: mongodb://mongo-test:27017/jornada_test
+      JWT_SECRET: test-only-signing-key-0123456789abcdef
+      CORS_ORIGINS: http://localhost:3000
+    depends_on:
+      postgres-test:
+        condition: service_healthy
+      mongo-test:
+        condition: service_healthy

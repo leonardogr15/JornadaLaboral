@@ -1,0 +1,4 @@
+# Normalize line endings so scripts and configs copied into Linux images use LF.
+* text=auto eol=lf
+*.png binary
+*.ico binary

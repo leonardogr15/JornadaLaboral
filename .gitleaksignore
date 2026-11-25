@@ -1,0 +1,6 @@
+# Historical findings only. backend/.env (local development values) was
+# committed early in the project history and removed from the tree in the
+# "remove committed .env" commit. History is intentionally not rewritten.
+# These values must be treated as compromised and rotated; they are not used
+# by the current configuration (all secrets now come from an untracked .env).
+41d91534e7acef222d1d02ebefa68f575877fd27:backend/.env:generic-api-key:11

@@ -1,7 +1,10 @@
 import axios from 'axios';
 
+// Set at build time (REACT_APP_API_URL); defaults to the local Docker setup.
+export const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
+
 const api = axios.create({
-  baseURL: 'http://localhost:5000/api',
+  baseURL: API_URL,
 });
 
 api.interceptors.request.use((config) => {
