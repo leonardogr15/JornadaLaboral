@@ -1,11 +1,12 @@
+import { vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import App from './App';
 import api from './api';
 
-// The real module imports axios (ESM), which CRA's Jest does not transform.
-jest.mock('./api', () => ({
+// The API module is replaced so the tests never reach the network.
+vi.mock('./api', () => ({
   __esModule: true,
-  default: { get: jest.fn(), post: jest.fn(), put: jest.fn(), delete: jest.fn() },
+  default: { get: vi.fn(), post: vi.fn(), put: vi.fn(), delete: vi.fn() },
 }));
 
 /** Builds an unsigned JWT-shaped token; the UI only decodes the payload. */

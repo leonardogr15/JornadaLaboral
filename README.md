@@ -36,7 +36,7 @@ flowchart LR
     A -->|"work shifts<br/>(Mongoose)"| M[(MongoDB)]
 ```
 
-The frontend is a static bundle; the browser calls the API directly (the API URL is set at build time with `REACT_APP_API_URL`, and the API only accepts browser origins listed in `CORS_ORIGINS`).
+The frontend is a static bundle; the browser calls the API directly (the API URL is set at build time with `VITE_API_URL`, and the API only accepts browser origins listed in `CORS_ORIGINS`).
 
 **Why two data stores?** The project deliberately demonstrates polyglot persistence:
 

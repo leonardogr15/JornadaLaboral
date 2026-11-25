@@ -1,11 +1,12 @@
+import { vi } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import LoginForm from './LoginForm';
 import api from '../api';
 
-jest.mock('../api', () => ({
+vi.mock('../api', () => ({
   __esModule: true,
-  default: { post: jest.fn() },
+  default: { post: vi.fn() },
 }));
 
 function renderLogin() {

@@ -1,7 +1,8 @@
 import axios from 'axios';
 
-// Set at build time (REACT_APP_API_URL); defaults to the local Docker setup.
-export const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
+// Set at build time (VITE_API_URL). Vite inlines every VITE_* variable into the
+// public bundle, so only non-secret values such as this URL may use the prefix.
+export const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
 const api = axios.create({
   baseURL: API_URL,

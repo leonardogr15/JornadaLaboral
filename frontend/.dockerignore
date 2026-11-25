@@ -1,5 +1,5 @@
 node_modules
-build
+dist
 coverage
 npm-debug.log*
 .env
@@ -9,3 +9,8 @@ npm-debug.log*
 Dockerfile
 .dockerignore
 README.md
+e2e
+playwright.config.js
+test-results
+playwright-report
+docs-output

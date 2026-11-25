@@ -72,7 +72,11 @@ services:
     build:
       context: ./frontend
       args:
-        REACT_APP_API_URL: ${REACT_APP_API_URL:-http://localhost:5000/api}
+        # Public value baked into the browser bundle; never a secret.
+        VITE_API_URL: ${VITE_API_URL:-http://localhost:5000/api}
+    environment:
+      # Origin of VITE_API_URL, allowed by the Content-Security-Policy (connect-src).
+      API_ORIGIN: ${API_ORIGIN:-http://localhost:5000}
     ports:
       - "127.0.0.1:3000:8080"
     depends_on:

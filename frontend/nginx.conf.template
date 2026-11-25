@@ -1,3 +1,4 @@
+# Rendered by the nginx image at startup (envsubst).
 server {
     listen 8080;
     server_name _;
@@ -14,8 +15,9 @@ server {
         try_files $uri $uri/ /index.html;
     }
 
-    location /static/ {
-        # Hashed file names; "expires" keeps the server-level headers above.
+    location /assets/ {
+        # Hashed file names. An add_header here would drop the server-level headers,
+        # so only "expires" is set.
         expires 1y;
     }
 }
