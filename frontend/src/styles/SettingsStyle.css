@@ -106,3 +106,8 @@ form select {
     color: black; 
 }
 
+
+.error-message {
+  color: #ffb4b4;
+  font-weight: 600;
+}

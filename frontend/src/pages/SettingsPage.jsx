@@ -10,12 +10,20 @@ export default function SettingsPage() {
 
     const [usuarios, setUsuarios] = useState([]);
     const [usuarioEditando, setUsuarioEditando] = useState(null);
+    const [error, setError] = useState('');
     const navigate = useNavigate();
 
     useEffect(() => {
         (async () => {
-            const { data } = await api.get('/usuarios');
-            setUsuarios(data);
+            try {
+                const { data } = await api.get('/usuarios');
+                setUsuarios(data);
+            } catch (err) {
+                // The API decides who may manage users; the page only reports it.
+                setError(err.response?.status === 403
+                    ? 'No tienes permisos para gestionar usuarios.'
+                    : 'No se pudieron cargar los usuarios.');
+            }
         })();
     }, []);
 
@@ -51,6 +59,7 @@ export default function SettingsPage() {
                     <FaArrowLeft className="back-icon" /> Volver
                 </button>
             </div>
+            {error && <p role="alert" className="error-message">{error}</p>}
             <UserForm key={usuarioEditando?.id ?? 'new'} onCreate={createUser} onUpdate={updateUser} editingUser={usuarioEditando} />
             <hr />
             <br/>

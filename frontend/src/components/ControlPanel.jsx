@@ -20,17 +20,9 @@ export default function ControlPanel() {
   }, []);
 
 
-  const handleNuevaJornada = async ({ horaEntrada, horaSalida }) => {
-    try {
-
-      const { data: nuevaJornada } = await api.post('/jornadas', {
-        horaEntrada,
-        horaSalida,
-      });
-      setJornadas((prev) => [...prev, nuevaJornada]);
-    } catch (err) {
-      console.error('Error al registrar nueva jornada:', err);
-    }
+  // JornadaForm already saved the shift; only the list is updated here.
+  const handleNuevaJornada = (nuevaJornada) => {
+    setJornadas((prev) => [...prev, nuevaJornada]);
   };
 
   return (

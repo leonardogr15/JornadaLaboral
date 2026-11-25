@@ -49,13 +49,13 @@ export default function JornadaForm({ onAdd }) {
             <div className="input-form">
                 <div className="input-time">
                     <label htmlFor="entrada">Hora de entrada</label>
-                    <input type="time" placeholder="Hora de entrada" value={entrada} onChange={(e) => handleEntradaChange(e.target.value)} required />
+                    <input id="entrada" type="time" placeholder="Hora de entrada" value={entrada} onChange={(e) => handleEntradaChange(e.target.value)} required />
                     <FaClock className="icon" />
                 </div>
 
                 <div className="input-time">
                     <label htmlFor="salida">Hora de salida</label>
-                    <input type="time" placeholder="Hora de salida" value={salida} onChange={(e) => setSalida(e.target.value)} disabled={!entrada}   required />
+                    <input id="salida" type="time" placeholder="Hora de salida" value={salida} onChange={(e) => setSalida(e.target.value)} disabled={!entrada}   required />
                     <FaClock className="icon" />
                 </div>
             </div>
