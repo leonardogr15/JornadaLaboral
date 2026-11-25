@@ -16,7 +16,7 @@ export default function LoginForm() {
             const res = await api.post('/auth/login', { email, password });
             localStorage.setItem('token', res.data.token);
             navigate('/dashboard');
-        } catch (err) {
+        } catch {
             setError('Credenciales incorrectas');
         }
     };

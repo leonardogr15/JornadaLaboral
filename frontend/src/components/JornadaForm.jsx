@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { FaClock } from 'react-icons/fa';
 import api from '../api';
 import '../styles/ControlPanelStyle.css';
@@ -8,12 +8,14 @@ export default function JornadaForm({ onAdd }) {
     const [salida, setSalida] = useState('');
     const [mensaje, setMensaje] = useState('');
 
-    useEffect(() => {
-        if (!entrada) {
+    // Clearing the entry time also clears the exit time and any message.
+    const handleEntradaChange = (value) => {
+        setEntrada(value);
+        if (!value) {
             setSalida('');
             setMensaje('');
         }
-    }, [entrada]);
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -34,7 +36,7 @@ export default function JornadaForm({ onAdd }) {
             setMensaje('Hora registrada exitosamente');
             setEntrada('');
             setSalida('');
-        } catch (err) {
+        } catch {
             setMensaje('Error al registrar Horario');
         }
     };
@@ -47,7 +49,7 @@ export default function JornadaForm({ onAdd }) {
             <div className="input-form">
                 <div className="input-time">
                     <label htmlFor="entrada">Hora de entrada</label>
-                    <input type="time" placeholder="Hora de entrada" value={entrada} onChange={(e) => setEntrada(e.target.value)} required />
+                    <input type="time" placeholder="Hora de entrada" value={entrada} onChange={(e) => handleEntradaChange(e.target.value)} required />
                     <FaClock className="icon" />
                 </div>
 

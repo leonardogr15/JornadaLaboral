@@ -51,7 +51,7 @@ export default function SettingsPage() {
                     <FaArrowLeft className="back-icon" /> Volver
                 </button>
             </div>
-            <UserForm onCreate={createUser} onUpdate={updateUser} editingUser={usuarioEditando} />
+            <UserForm key={usuarioEditando?.id ?? 'new'} onCreate={createUser} onUpdate={updateUser} editingUser={usuarioEditando} />
             <hr />
             <br/>
             <UserTable usuarios={usuarios} onDelete={deleteUser} onEdit={(usr) => setUsuarioEditando(usr)} />

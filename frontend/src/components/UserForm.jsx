@@ -1,18 +1,16 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { FaUser, FaLock } from 'react-icons/fa';
 import { IoIosArrowDown } from "react-icons/io";
 import '../styles/ControlPanelStyle.css';
 
 export default function UserForm({ editingUser, onCreate, onUpdate }) {
-    const [nuevoUsuario, setNuevoUsuario] = useState({ id: null, nombre: '', email: '', password: '', rol: 'user'});
-
-    useEffect(() => {
-        if (editingUser) {
-            setNuevoUsuario({ id: editingUser.id, nombre: editingUser.nombre, email: editingUser.email, password: '', rol: editingUser.rol });
-        } else {
-        setNuevoUsuario({ id: null, nombre: '', email: '', password: '', rol: 'user' });
-        }
-    }, [editingUser]);
+    // The parent remounts this form (key) when the user being edited changes,
+    // so the initial state is derived once from the props.
+    const [nuevoUsuario, setNuevoUsuario] = useState(() =>
+        editingUser
+            ? { id: editingUser.id, nombre: editingUser.nombre, email: editingUser.email, password: '', rol: editingUser.rol }
+            : { id: null, nombre: '', email: '', password: '', rol: 'user' }
+    );
 
     const handleChange = (e) => {
         const { name, value } = e.target;
