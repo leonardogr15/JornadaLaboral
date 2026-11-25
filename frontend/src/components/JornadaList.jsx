@@ -21,29 +21,29 @@ export default function JornadaList({ jornadas, cargando = false }) {
             {!cargando && <p>Registra la primera con el formulario.</p>}
           </div>
         ) : (
-          <table className="table table-stack jornada-table shift-table">
-            <thead>
-              <tr>
-                <th scope="col">Fecha</th>
-                <th scope="col">Entrada</th>
-                <th scope="col">Salida</th>
-                <th scope="col" className="col-end">Horas trabajadas</th>
+          <table role="table" className="table table-stack jornada-table shift-table">
+            <thead role="rowgroup">
+              <tr role="row">
+                <th role="columnheader" scope="col">Fecha</th>
+                <th role="columnheader" scope="col">Entrada</th>
+                <th role="columnheader" scope="col">Salida</th>
+                <th role="columnheader" scope="col" className="col-end">Horas trabajadas</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody role="rowgroup">
               {filas.map((j, index) => {
                 const { date, weekday } = formatShiftDate(j.fecha);
                 return (
-                  <tr key={j._id ?? index}>
-                    <td data-label="Fecha" className="shift-date">
+                  <tr role="row" key={j._id ?? index}>
+                    <td role="cell" data-label="Fecha" className="shift-date">
                       <span>
                         <span className="cell-primary num">{date}</span>
                         <span className="cell-secondary">{weekday}</span>
                       </span>
                     </td>
-                    <td data-label="Entrada" className="num shift-in">{j.horaEntrada}</td>
-                    <td data-label="Salida" className="num shift-out">{j.horaSalida}</td>
-                    <td data-label="Horas trabajadas" className="col-end shift-hours">
+                    <td role="cell" data-label="Entrada" className="num shift-in">{j.horaEntrada}</td>
+                    <td role="cell" data-label="Salida" className="num shift-out">{j.horaSalida}</td>
+                    <td role="cell" data-label="Horas trabajadas" className="col-end shift-hours">
                       <span className="duration-pill">{formatDuration(j.horasTrabajadas)}</span>
                     </td>
                   </tr>

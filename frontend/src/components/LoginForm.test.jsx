@@ -72,5 +72,6 @@ test('explains empty fields without calling the API', async () => {
   expect(await screen.findByText('Introduce tu correo electrónico.')).toBeInTheDocument();
   expect(screen.getByText('Introduce tu contraseña.')).toBeInTheDocument();
   expect(screen.getByLabelText('Correo electrónico')).toHaveAttribute('aria-invalid', 'true');
+  expect(screen.getByLabelText('Correo electrónico')).toHaveFocus();
   expect(api.post).not.toHaveBeenCalled();
 });

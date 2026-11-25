@@ -63,14 +63,20 @@ export default function SettingsPage() {
         setErrorFormulario('');
         try {
             await accion();
-            await recargar();
-            setFormulario(null);
-            setAviso(textoOk);
-            tituloRef.current?.focus();
         } catch (err) {
             setErrorFormulario(mensajeDeError(err, textoError));
-        } finally {
             setEnviando(false);
+            return;
+        }
+        // Saved: close the form even if refreshing the list fails afterwards.
+        setEnviando(false);
+        setFormulario(null);
+        setAviso(textoOk);
+        tituloRef.current?.focus();
+        try {
+            await recargar();
+        } catch {
+            setError('Los cambios se guardaron, pero no se pudo actualizar la lista. Recarga la página.');
         }
     };
 
@@ -88,13 +94,14 @@ export default function SettingsPage() {
             await api.delete(`/usuarios/${usuario.id}`);
             setUsuarios((prev) => prev.filter((u) => u.id !== usuario.id));
             setAviso(`Usuario «${usuario.nombre}» eliminado.`);
+            tituloRef.current?.focus(); // the pressed button no longer exists
         } catch (err) {
             setError(mensajeDeError(err, 'No se pudo eliminar el usuario.'));
         }
     };
 
     return (
-        <AppLayout>
+        <AppLayout title="Usuarios">
             <div className="page-header">
                 <div>
                     <h1 className="page-title" ref={tituloRef} tabIndex={-1}>Usuarios</h1>

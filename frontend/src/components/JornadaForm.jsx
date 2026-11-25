@@ -84,17 +84,28 @@ export default function JornadaForm({ onAdd }) {
                     </div>
                 </div>
 
-                <p className="shift-duration" aria-live="polite">
+                <p className="shift-duration">
                     <span>Duración</span>
-                    <strong>{minutos ? formatDuration(minutos / 60) : '—'}</strong>
+                    {minutos ? <strong>{formatDuration(minutos / 60)}</strong> : <span className="duration-empty">Indica entrada y salida</span>}
                 </p>
 
-                {mensaje && (
-                    <div className={`alert ${mensaje.tipo === 'ok' ? 'alert-success' : 'alert-error'}`} role={mensaje.tipo === 'ok' ? 'status' : 'alert'}>
-                        {mensaje.tipo === 'ok' ? <FiCheckCircle aria-hidden="true" /> : <FiAlertCircle aria-hidden="true" />}
-                        <span>{mensaje.texto}</span>
-                    </div>
-                )}
+                {/* Always in the DOM, so screen readers announce what is placed inside. */}
+                <div role="status" className="message-slot">
+                    {mensaje?.tipo === 'ok' && (
+                        <p className="alert alert-success">
+                            <FiCheckCircle aria-hidden="true" />
+                            <span>{mensaje.texto}</span>
+                        </p>
+                    )}
+                </div>
+                <div role="alert" className="message-slot">
+                    {mensaje?.tipo === 'error' && (
+                        <p className="alert alert-error">
+                            <FiAlertCircle aria-hidden="true" />
+                            <span>{mensaje.texto}</span>
+                        </p>
+                    )}
+                </div>
 
                 <button type="submit" className="btn btn-primary btn-block" disabled={guardando}>
                     <FiSave aria-hidden="true" />

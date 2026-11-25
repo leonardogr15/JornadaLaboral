@@ -111,7 +111,11 @@ test('the main flow works with the keyboard alone', async ({ page, request }) =>
   await expect(page.getByRole('link', { name: 'Saltar al contenido' })).toBeFocused();
   // The native time field follows the OS locale: 24-hour, or 12-hour with an AM/PM segment.
   const entrada = page.getByLabel('Hora de entrada');
-  await entrada.focus();
+  // Tab through the header and into the form, as a keyboard user would.
+  for (let i = 0; i < 10 && !(await entrada.evaluate((el) => el === document.activeElement)); i++) {
+    await page.keyboard.press('Tab');
+  }
+  await expect(entrada).toBeFocused();
   await page.keyboard.type('0800');
   const docesHoras = (await entrada.inputValue()) === '';
   if (docesHoras) await page.keyboard.type('A');

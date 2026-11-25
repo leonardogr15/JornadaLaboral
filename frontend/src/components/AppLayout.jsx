@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { NavLink, useNavigate } from 'react-router-dom';
+import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { FiClock, FiLogOut, FiUsers } from 'react-icons/fi';
 import api from '../api';
 import { roleLabel } from '../utils/format';
@@ -14,11 +14,15 @@ export function BrandMark() {
 }
 
 /** Shared header and page frame for the signed-in pages. */
-export default function AppLayout({ children }) {
+export default function AppLayout({ title, children }) {
   const navigate = useNavigate();
   const [perfil, setPerfil] = useState(null);
   // Navigation only: the API enforces the real role on every request.
   const esAdmin = tokenRole() === 'admin';
+
+  useEffect(() => {
+    document.title = `${title} · Jornada Laboral`;
+  }, [title]);
 
   useEffect(() => {
     let activo = true;
@@ -45,10 +49,10 @@ export default function AppLayout({ children }) {
       </a>
       <header className="app-header">
         <div className="app-header-inner">
-          <NavLink to="/dashboard" className="brand">
+          <Link to="/dashboard" className="brand">
             <BrandMark />
             Jornada Laboral
-          </NavLink>
+          </Link>
           <nav className="app-nav" aria-label="Principal">
             <NavLink to="/dashboard">
               <FiClock aria-hidden="true" /> Mis jornadas
@@ -67,7 +71,7 @@ export default function AppLayout({ children }) {
               </div>
             )}
             <button type="button" className="btn btn-header" onClick={cerrarSesion}>
-              <FiLogOut aria-hidden="true" /> Cerrar sesión
+              <FiLogOut aria-hidden="true" /> <span className="btn-label">Cerrar sesión</span>
             </button>
           </div>
         </div>

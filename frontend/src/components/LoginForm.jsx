@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FiAlertCircle, FiEye, FiEyeOff, FiLogIn } from 'react-icons/fi';
 import api from '../api';
@@ -11,6 +11,8 @@ export default function LoginForm() {
   const [error, setError] = useState('');
   const [enviando, setEnviando] = useState(false);
   const navigate = useNavigate();
+  const emailRef = useRef(null);
+  const passwordRef = useRef(null);
 
   const validar = () => {
     const e = {};
@@ -25,7 +27,10 @@ export default function LoginForm() {
     setError('');
     const encontrados = validar();
     setErrores(encontrados);
-    if (Object.keys(encontrados).length > 0) return;
+    if (Object.keys(encontrados).length > 0) {
+      (encontrados.email ? emailRef : passwordRef).current?.focus();
+      return;
+    }
 
     setEnviando(true);
     try {
@@ -55,6 +60,7 @@ export default function LoginForm() {
           <label className="field-label" htmlFor="login-email">Correo electrónico</label>
           <input
             id="login-email"
+            ref={emailRef}
             className="input"
             type="email"
             autoComplete="username"
@@ -73,6 +79,7 @@ export default function LoginForm() {
           <div className="password-field">
             <input
               id="login-password"
+              ref={passwordRef}
               className="input"
               type={verPassword ? 'text' : 'password'}
               autoComplete="current-password"
@@ -86,7 +93,7 @@ export default function LoginForm() {
               type="button"
               className="password-toggle"
               onClick={() => setVerPassword((v) => !v)}
-              aria-label={verPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
+              aria-label="Mostrar contraseña"
               aria-pressed={verPassword}
             >
               {verPassword ? <FiEyeOff aria-hidden="true" /> : <FiEye aria-hidden="true" />}

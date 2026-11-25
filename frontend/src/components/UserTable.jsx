@@ -17,18 +17,18 @@ export default function UserTable({ usuarios, onDelete, onEdit, cargando = false
                         <p className="empty-state-title">{cargando ? 'Cargando usuarios…' : 'No hay usuarios para mostrar'}</p>
                     </div>
                 ) : (
-                    <table className="table table-stack">
-                        <thead>
-                            <tr>
-                                <th scope="col">Nombre</th>
-                                <th scope="col">Rol</th>
-                                <th scope="col" className="col-end">Acciones</th>
+                    <table role="table" className="table table-stack">
+                        <thead role="rowgroup">
+                            <tr role="row">
+                                <th role="columnheader" scope="col">Nombre</th>
+                                <th role="columnheader" scope="col">Rol</th>
+                                <th role="columnheader" scope="col" className="col-end">Acciones</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody role="rowgroup">
                             {usuarios.map((usuario) => (
-                                <tr key={usuario.id}>
-                                    <td className="cell-full">
+                                <tr role="row" key={usuario.id}>
+                                    <td role="cell" className="cell-full">
                                         <span className="user-cell">
                                             <span className="avatar" aria-hidden="true">{initials(usuario.nombre)}</span>
                                             <span className="min-w-0">
@@ -37,10 +37,10 @@ export default function UserTable({ usuarios, onDelete, onEdit, cargando = false
                                             </span>
                                         </span>
                                     </td>
-                                    <td data-label="Rol">
+                                    <td role="cell" data-label="Rol">
                                         <span className={`badge ${usuario.rol === 'admin' ? 'badge-admin' : 'badge-user'}`}>{roleLabel(usuario.rol)}</span>
                                     </td>
-                                    <td className="cell-full col-end">
+                                    <td role="cell" className="cell-full col-end">
                                         <div className="row-actions">
                                             <button type="button" className="btn btn-ghost btn-sm" onClick={() => onEdit(usuario)} aria-label={`Editar a ${usuario.nombre}`}>
                                                 <FiEdit2 aria-hidden="true" /> Editar

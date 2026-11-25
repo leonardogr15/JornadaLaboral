@@ -13,3 +13,12 @@ describe('shift dates', () => {
     expect(screen.getByText('16/11/2026')).toBeInTheDocument();
   });
 });
+
+test('lists the newest shift first', () => {
+  const older = { ...SHIFT, _id: 'a', fecha: '2026-11-16T00:00:00.000Z' };
+  const newer = { ...SHIFT, _id: 'b', fecha: '2026-11-18T00:00:00.000Z' };
+  render(<JornadaList jornadas={[older, newer]} />); // API order: oldest first
+  const rows = screen.getAllByRole('row').slice(1);
+  expect(rows[0]).toHaveTextContent('18/11/2026');
+  expect(rows[1]).toHaveTextContent('16/11/2026');
+});

@@ -3,7 +3,7 @@ import ControlPanel from '../components/ControlPanel';
 
 export default function PanelPage() {
   return (
-    <AppLayout>
+    <AppLayout title="Mis jornadas">
       <div className="page-header">
         <div>
           <h1 className="page-title">Mis jornadas</h1>

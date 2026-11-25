@@ -93,4 +93,15 @@ test('reports a refusal from the API instead of showing an empty list', async ()
   renderPage();
 
   expect(await screen.findByRole('alert')).toHaveTextContent(/no tienes permisos/i);
+  expect(screen.queryByRole('table')).not.toBeInTheDocument();
+  expect(screen.queryByRole('button', { name: /nuevo usuario/i })).not.toBeInTheDocument();
+});
+
+test('moves keyboard focus into the form when it opens', async () => {
+  api.get.mockResolvedValue({ data: [ANA] });
+  const user = userEvent.setup();
+  renderPage();
+
+  await user.click(await screen.findByRole('button', { name: /nuevo usuario/i }));
+  expect(screen.getByLabelText('Nombre')).toHaveFocus();
 });

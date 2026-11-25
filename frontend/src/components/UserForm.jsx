@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { FiAlertCircle, FiSave, FiX } from 'react-icons/fi';
 
 const VACIO = { id: null, nombre: '', email: '', password: '', rol: 'user' };
@@ -14,6 +14,12 @@ export default function UserForm({ editingUser, onCreate, onUpdate, onCancel, er
             : VACIO
     );
     const editando = Boolean(usuario.id);
+    const nombreRef = useRef(null);
+
+    // Opening the form (also from a row far down the list) moves focus, and the view, to it.
+    useEffect(() => {
+        nombreRef.current?.focus();
+    }, []);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -46,7 +52,7 @@ export default function UserForm({ editingUser, onCreate, onUpdate, onCancel, er
                 <div className="user-form-grid">
                     <div className="field">
                         <label className="field-label" htmlFor="usuario-nombre">Nombre</label>
-                        <input id="usuario-nombre" className="input" name="nombre" type="text" autoComplete="off" value={usuario.nombre} onChange={handleChange} required maxLength={100} />
+                        <input id="usuario-nombre" ref={nombreRef} className="input" name="nombre" type="text" autoComplete="off" value={usuario.nombre} onChange={handleChange} required maxLength={100} />
                     </div>
                     <div className="field">
                         <label className="field-label" htmlFor="usuario-email">Correo electrónico</label>
