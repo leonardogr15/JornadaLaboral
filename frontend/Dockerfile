@@ -12,7 +12,8 @@ RUN npm run build
 # Static files served by an unprivileged nginx (listens on 8080, non-root).
 # The official image renders /etc/nginx/templates/*.template with envsubst at startup,
 # which puts the API origin into the Content-Security-Policy (connect-src).
-FROM nginxinc/nginx-unprivileged:stable-alpine
+# Pinned by digest (stable-alpine, nginx 1.30.6); update deliberately.
+FROM nginxinc/nginx-unprivileged:stable-alpine@sha256:f5116ed4606f3eb015dd4a8e28cb9b351476dc0ad4bc6e9f93b19cec130cdf03
 ENV API_ORIGIN=http://localhost:5000
 COPY nginx.conf.template /etc/nginx/templates/default.conf.template
 COPY --from=builder /app/dist /usr/share/nginx/html

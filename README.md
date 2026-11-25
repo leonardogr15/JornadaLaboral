@@ -89,6 +89,8 @@ docker compose ps         # wait until backend shows "healthy"
 
 Stop with `docker compose down` (add `-v` to also delete the database volumes).
 
+If you serve the API from another address, change `VITE_API_URL` and `API_ORIGIN` together: the Content-Security-Policy only lets the browser call `API_ORIGIN`.
+
 Compose refuses to start if a required variable is missing, and the backend refuses to start if `JWT_SECRET` is shorter than 32 characters. See [`.env.example`](.env.example) for every variable.
 
 ### Demo login
@@ -119,7 +121,8 @@ End-to-end checks (Playwright, desktop and mobile) run against the Compose stack
 ```bash
 cd frontend
 npx playwright install chromium   # once
-E2E_BASE_URL=http://localhost:3000 E2E_API_URL=http://localhost:5000/api   DEMO_ADMIN_PASSWORD=<value from .env> npm run e2e
+set -a; . ../.env; set +a         # DEMO_ADMIN_PASSWORD without typing it on the command line
+E2E_BASE_URL=http://localhost:3000 E2E_API_URL=http://localhost:5000/api npm run e2e
 ```
 
 The backend suite covers login (including generic error messages and rate limiting), forged tokens (`alg: none`, wrong key), admin CRUD, **a normal user getting 403 on every user-management action including escalating their own role**, 401 without a token, last-admin protection, shift validation and per-user shift isolation. GitHub Actions runs the backend suite, the frontend lint, tests and build, a Docker Compose build with a health smoke test, and a gitleaks scan of the full history; the end-to-end checks run locally.
@@ -132,7 +135,8 @@ On a freshly started stack (`docker compose down -v` deletes the local databases
 
 ```bash
 cd frontend
-DOCS=1 E2E_BASE_URL=http://localhost:3000 E2E_API_URL=http://localhost:5000/api   DEMO_ADMIN_PASSWORD=<value from .env> npm run e2e
+set -a; . ../.env; set +a
+DOCS=1 E2E_BASE_URL=http://localhost:3000 E2E_API_URL=http://localhost:5000/api npm run e2e
 cd .. && sh scripts/make_demo_media.sh   # builds docs/images/demo.gif with a pinned FFmpeg image
 ```
 
