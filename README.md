@@ -9,11 +9,11 @@ A containerized work-shift tracker: employees log their daily entry and exit tim
 
 What it shows technically: an Express 5 API whose authorization is enforced on the server and tested against real PostgreSQL and MongoDB, polyglot persistence, and a React + Vite frontend served behind a strict Content-Security-Policy.
 
-![An employee signs in, enters today's entry and exit times and the shift appears in the history](docs/images/demo.gif)
+![An employee signs in, enters today's entry and exit times, sees the duration preview and the shift appears at the top of the history](docs/images/demo.gif)
 
 | Sign in | Shift history | User management (admin) |
 |---|---|---|
-| ![Sign-in page](docs/images/login.jpg) | ![An employee's shift history with the hours worked per day](docs/images/shifts.jpg) | ![Admin page listing users with their roles and edit and delete actions](docs/images/users.jpg) |
+| ![Sign-in page with the brand panel and the sign-in card](docs/images/login.jpg) | ![Shift page with the registration form, totals and the history with hours per day](docs/images/shifts.png) | ![Admin page listing users with role badges and Edit and Delete actions](docs/images/users.png) |
 
 *Screenshots and GIF come from the running app with fictional data (see [Regenerating the README media](#regenerating-the-readme-media)).*
 
@@ -22,8 +22,8 @@ The UI is in Spanish (the original target users); code comments, docs and commit
 ## Features
 
 - **Login** with email and password; JWT (HS256, 8 h expiry) and automatic logout after 5 minutes of inactivity.
-- **Work-shift log**: register entry/exit times; worked hours are calculated on the server; each user only sees their own shifts.
-- **User management (admin only)**: list, create, edit and delete users and assign the `user` or `admin` role.
+- **Work-shift log**: register entry/exit times with a live duration preview; worked hours are calculated on the server; each user only sees their own shifts, with totals and the average per shift.
+- **User management (admin only)**: list, create, edit and delete users and assign the `user` or `admin` role (shown as *Usuario* / *Administrador*).
 - **Server-side authorization**: the admin role is checked against the database on every request, and the last admin cannot be deleted or demoted.
 - **Health endpoint** that checks both databases, used by the Docker healthchecks.
 - **One-command setup** with Docker Compose (four services, healthchecks, no database ports exposed).
@@ -32,11 +32,11 @@ The UI is in Spanish (the original target users); code comments, docs and commit
 
 | Layer | Technology |
 |---|---|
-| Frontend | React 19, Vite, React Router 7, Axios; self-hosted fonts; served by unprivileged nginx with a strict CSP |
+| Frontend | React 19, Vite, React Router 7, Axios; a small design system in plain CSS (tokens for colour, type, spacing and states), no UI framework; self-hosted fonts; served by unprivileged nginx with a strict CSP |
 | API | Node.js 22, Express 5, zod, jsonwebtoken, bcrypt, helmet, express-rate-limit |
 | Users | PostgreSQL 16 (`pg`) |
 | Work shifts | MongoDB 7 (Mongoose 8) |
-| Tests | Jest + Supertest (API, real databases), Vitest + React Testing Library, Playwright (end-to-end), ESLint |
+| Tests | Jest + Supertest (API, real databases), Vitest + React Testing Library, Playwright + axe (end-to-end, accessibility), ESLint |
 | Delivery | Docker Compose, GitHub Actions, gitleaks |
 
 ## Architecture
@@ -116,7 +116,7 @@ npm test         # Vitest
 npm run build    # Vite, output in dist/
 ```
 
-End-to-end checks (Playwright, desktop and mobile) run against the Compose stack. They check the Content-Security-Policy on every route, an admin flow with no CSP violation or console error, and that a normal user cannot reach user management even after editing the token in the browser:
+End-to-end checks (Playwright) run against the Compose stack. They check the Content-Security-Policy on every route, an admin flow with no CSP violation or console error, that a normal user cannot reach user management even after editing the token in the browser, axe accessibility rules (WCAG 2.1 AA, contrast included) and a usable layout on every screen at 360x800, 390x844, 768x1024 and 1440x900, and the main flow with the keyboard alone:
 
 ```bash
 cd frontend

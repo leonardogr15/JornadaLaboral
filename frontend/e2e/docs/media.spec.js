@@ -18,14 +18,16 @@ test('README screenshots and animation frames', async ({ browser, request }) => 
   mkdirSync(RAW, { recursive: true });
   const { password } = await seedDemo(request);
   const desktop = { viewport: { width: 1280, height: 900 } };
-  // JPEG: the photographic background makes PNG captures about 1 MB each.
-  const shot = (page, name) => page.screenshot({ path: `${OUT}/${name}.jpg`, type: 'jpeg', quality: 82 });
+  // The sign-in page has the photographic wave panel, so it is a JPEG; the light work screens are
+  // PNG, which keeps their text sharp.
+  const shot = (page, name, type = 'png') =>
+    page.screenshot({ path: `${OUT}/${name}.${type === 'jpeg' ? 'jpg' : 'png'}`, type, ...(type === 'jpeg' ? { quality: 85 } : {}) });
 
   // 1. Sign-in page (empty form).
   const anon = await (await browser.newContext(desktop)).newPage();
   await anon.goto('/');
   await anon.evaluate(() => document.fonts.ready);
-  await shot(anon, 'login');
+  await shot(anon, 'login', 'jpeg');
 
   // 2. The employee's shift history.
   const lucia = await (await browser.newContext(desktop)).newPage();
@@ -37,17 +39,17 @@ test('README screenshots and animation frames', async ({ browser, request }) => 
   // 3. User management (admin).
   const admin = await (await browser.newContext(desktop)).newPage();
   await login(admin, ADMIN_EMAIL, ADMIN_PASSWORD);
-  await admin.getByRole('button', { name: /Configuración/ }).click();
-  await expect(admin.getByRole('cell', { name: EMPLOYEE.email })).toBeVisible();
+  await admin.getByRole('link', { name: 'Usuarios' }).click();
+  await expect(admin.getByText(EMPLOYEE.email)).toBeVisible();
   await admin.evaluate(() => document.fonts.ready);
   await shot(admin, 'users');
 
   // 4. Animation frames: Lucía signs in and records today's shift. Each step is a real screenshot
   // (no video compression noise), assembled by scripts/make_demo_media.sh with these durations.
-  // 1000x1000 keeps the desktop layout, the form and the whole history in one legible frame.
+  // 1100x900 keeps the two-column desktop layout, the form and the whole history in one frame.
   const lines = ['ffconcat version 1.0'];
   let count = 0;
-  const page = await (await browser.newContext({ viewport: { width: 1000, height: 1000 } })).newPage();
+  const page = await (await browser.newContext({ viewport: { width: 1100, height: 900 } })).newPage();
   const frame = async (seconds) => {
     const file = `frame-${String(count++).padStart(2, '0')}.png`;
     await page.evaluate(() => document.fonts.ready);
@@ -57,8 +59,8 @@ test('README screenshots and animation frames', async ({ browser, request }) => 
 
   await page.goto('/');
   await frame(1.2);
-  await page.getByPlaceholder('Correo electrónico').fill(EMPLOYEE.email);
-  await page.getByPlaceholder('Contraseña').fill(password); // masked field
+  await page.getByLabel('Correo electrónico', { exact: true }).fill(EMPLOYEE.email);
+  await page.getByLabel('Contraseña', { exact: true }).fill(password); // masked field
   await frame(1.4);
   await page.getByRole('button', { name: 'Ingresar' }).click();
   await expect(page.locator('.jornada-table tbody tr')).toHaveCount(5);
@@ -67,8 +69,8 @@ test('README screenshots and animation frames', async ({ browser, request }) => 
   await frame(1.0);
   await page.getByLabel('Hora de salida').fill('17:15');
   await frame(1.4);
-  await page.getByRole('button', { name: 'Guardar' }).click();
-  await expect(page.getByText('Hora registrada exitosamente')).toBeVisible();
+  await page.getByRole('button', { name: 'Guardar jornada' }).click();
+  await expect(page.getByRole('status').filter({ hasText: 'Jornada registrada' })).toBeVisible();
   await expect(page.locator('.jornada-table tbody tr')).toHaveCount(6);
   await frame(3.5);
   // The concat demuxer only honours the last duration if the last file is listed again.
