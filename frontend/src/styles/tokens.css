@@ -1,0 +1,69 @@
+/*
+ * Design tokens for Jornada Laboral. The identity keeps the deep blue and teal of the original
+ * wave background; work areas are light and neutral, and the wave artwork is reserved for the
+ * sign-in brand panel. Every text/background pair below meets WCAG AA (4.5:1) or better.
+ */
+:root {
+  /* Brand */
+  --color-navy-950: #0a1f3d;   /* app header, brand panel overlay */
+  --color-navy-900: #102a4c;
+  --color-blue-700: #0d5bb5;   /* primary action; white text 6.3:1 */
+  --color-blue-800: #0a4a94;   /* primary hover */
+  --color-blue-50: #eaf2fc;
+  --color-teal-700: #08705f;   /* accent, success; white text 6.0:1 */
+  --color-teal-50: #e3f5f1;
+
+  /* Neutrals */
+  --color-bg: #f3f6fa;         /* page background */
+  --color-surface: #ffffff;    /* cards, tables, inputs */
+  --color-surface-muted: #f7f9fc;
+  --color-border: #d6dee9;
+  --color-border-strong: #8a9ab0; /* input borders: 3:1 against white (WCAG 1.4.11) */
+  --color-text: #13233a;       /* 15.4:1 on white */
+  --color-text-muted: #4d5c73; /* 6.6:1 on white, 6.1:1 on --color-bg */
+  --color-on-dark: #ffffff;
+  --color-on-dark-muted: #cfdcee;
+
+  /* States */
+  --color-danger: #b42318;     /* 6.5:1 on white */
+  --color-danger-50: #fdf0ef;
+  --color-success: var(--color-teal-700);
+  --color-success-50: var(--color-teal-50);
+  --color-focus: #1b6fd8;
+
+  /* Typography */
+  --font-display: 'Poppins', system-ui, sans-serif;
+  --font-body: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --text-xs: 0.8125rem;
+  --text-sm: 0.875rem;
+  --text-md: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.375rem;
+  --text-2xl: 1.75rem;
+  --text-3xl: 2.25rem;
+  --leading-tight: 1.2;
+  --leading-normal: 1.5;
+
+  /* Spacing (4 px scale) */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+
+  /* Shape and depth */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-full: 999px;
+  --shadow-card: 0 1px 2px rgba(16, 42, 76, 0.06), 0 4px 16px rgba(16, 42, 76, 0.06);
+  --shadow-raised: 0 12px 40px rgba(10, 31, 61, 0.18);
+
+  /* Layout */
+  --content-width: 1120px;
+  --header-height: 64px;
+}

@@ -24,8 +24,8 @@ export async function watchForProblems(page) {
 
 export async function login(page, email, password) {
   await page.goto('/');
-  await page.getByPlaceholder('Correo electrónico').fill(email);
-  await page.getByPlaceholder('Contraseña').fill(password);
+  await page.getByLabel('Correo electrónico', { exact: true }).fill(email);
+  await page.getByLabel('Contraseña', { exact: true }).fill(password);
   await page.getByRole('button', { name: 'Ingresar' }).click();
   await expect(page).toHaveURL(/\/dashboard$/);
 }

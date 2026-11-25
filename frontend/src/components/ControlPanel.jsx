@@ -1,24 +1,28 @@
 import { useEffect, useState } from 'react';
-import JornadaForm from '../components/JornadaForm';
-import JornadaList from '../components/JornadaList';
+import { FiAlertCircle } from 'react-icons/fi';
+import JornadaForm from './JornadaForm';
+import JornadaList from './JornadaList';
+import ShiftSummary from './ShiftSummary';
 import api from '../api';
 
 export default function ControlPanel() {
   const [jornadas, setJornadas] = useState([]);
+  const [cargando, setCargando] = useState(true);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     const fetchJornadas = async () => {
       try {
         const res = await api.get('/jornadas');
         setJornadas(res.data);
-      } catch (err) {
-        console.error('Error al obtener jornadas:', err);
+      } catch {
+        setError('No se pudo cargar el historial. Vuelve a intentarlo en unos minutos.');
+      } finally {
+        setCargando(false);
       }
-  };
-
+    };
     fetchJornadas();
   }, []);
-
 
   // JornadaForm already saved the shift; only the list is updated here.
   const handleNuevaJornada = (nuevaJornada) => {
@@ -26,10 +30,18 @@ export default function ControlPanel() {
   };
 
   return (
-    <div className="form-panel" style={{ padding: '2rem' }}>
+    <div className="shifts-layout">
       <JornadaForm onAdd={handleNuevaJornada} />
-      <hr />
-      <JornadaList jornadas={jornadas} />
+      <div className="shifts-main">
+        <ShiftSummary jornadas={jornadas} />
+        {error && (
+          <div className="alert alert-error" role="alert">
+            <FiAlertCircle aria-hidden="true" />
+            <span>{error}</span>
+          </div>
+        )}
+        <JornadaList jornadas={jornadas} cargando={cargando} />
+      </div>
     </div>
   );
 }

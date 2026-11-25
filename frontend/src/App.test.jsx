@@ -42,15 +42,15 @@ describe('protected routes', () => {
     expect(api.get).toHaveBeenCalledWith('/jornadas');
   });
 
-  test('shows the settings button only to admins', async () => {
+  test('shows the user-management link only to admins', async () => {
     localStorage.setItem('token', fakeToken({ id: 2, rol: 'user' }));
     const { unmount } = renderAt('/dashboard');
     await screen.findByRole('heading', { name: /registrar jornada/i });
-    expect(screen.queryByRole('button', { name: /configuración/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: /usuarios/i })).not.toBeInTheDocument();
     unmount();
 
     localStorage.setItem('token', fakeToken({ id: 1, rol: 'admin' }));
     renderAt('/dashboard');
-    expect(await screen.findByRole('button', { name: /configuración/i })).toBeInTheDocument();
+    expect(await screen.findByRole('link', { name: /usuarios/i })).toBeInTheDocument();
   });
 });

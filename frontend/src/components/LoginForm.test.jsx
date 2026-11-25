@@ -21,8 +21,8 @@ function renderLogin() {
 }
 
 function fillAndSubmit(email, password) {
-  fireEvent.change(screen.getByPlaceholderText(/correo electrónico/i), { target: { value: email } });
-  fireEvent.change(screen.getByPlaceholderText(/contraseña/i), { target: { value: password } });
+  fireEvent.change(screen.getByLabelText('Correo electrónico'), { target: { value: email } });
+  fireEvent.change(screen.getByLabelText('Contraseña'), { target: { value: password } });
   fireEvent.click(screen.getByRole('button', { name: /ingresar/i }));
 }
 
@@ -34,8 +34,8 @@ beforeEach(() => {
 test('renders required email and password fields', () => {
   renderLogin();
 
-  const email = screen.getByPlaceholderText(/correo electrónico/i);
-  const password = screen.getByPlaceholderText(/contraseña/i);
+  const email = screen.getByLabelText('Correo electrónico');
+  const password = screen.getByLabelText('Contraseña');
   expect(email).toHaveAttribute('type', 'email');
   expect(email).toBeRequired();
   expect(password).toHaveAttribute('type', 'password');
@@ -62,4 +62,15 @@ test('shows a generic error and stays on the login page on failure', async () =>
   expect(await screen.findByText(/credenciales incorrectas/i)).toBeInTheDocument();
   await waitFor(() => expect(localStorage.getItem('token')).toBeNull());
   expect(screen.queryByText('dashboard page')).not.toBeInTheDocument();
+});
+
+test('explains empty fields without calling the API', async () => {
+  renderLogin();
+
+  fireEvent.click(screen.getByRole('button', { name: /ingresar/i }));
+
+  expect(await screen.findByText('Introduce tu correo electrónico.')).toBeInTheDocument();
+  expect(screen.getByText('Introduce tu contraseña.')).toBeInTheDocument();
+  expect(screen.getByLabelText('Correo electrónico')).toHaveAttribute('aria-invalid', 'true');
+  expect(api.post).not.toHaveBeenCalled();
 });

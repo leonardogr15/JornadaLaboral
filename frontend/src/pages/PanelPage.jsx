@@ -1,47 +1,16 @@
+import AppLayout from '../components/AppLayout';
 import ControlPanel from '../components/ControlPanel';
-import { useNavigate } from 'react-router-dom';
-import { FiSettings,FiLogOut } from 'react-icons/fi';
-import '../styles/ControlPanelStyle.css' 
-
 
 export default function PanelPage() {
-  const navigate = useNavigate();
-
-  const token = localStorage.getItem('token');
-  let userRole = null;
-  if (token) {
-    try {
-      const payload = JSON.parse(atob(token.split('.')[1]));
-      userRole = payload.rol;
-    } catch (err) {
-      console.error('Token inválido:', err);
-    }
-  }
-
-  const irAConfiguracion = () => {
-    navigate('/configuracion');
-  };
-  const cerrarSesion = () => {
-    localStorage.removeItem('token');
-    navigate('/');
-  };
-
   return (
-    <div className="panel-page">
-      <div className="panel-header">
-
-        <button className="logout-btn" onClick={cerrarSesion}>
-          Cerrar sesión <FiLogOut className="icon" />
-        </button>
-        
-        {userRole === 'admin' && (
-          <button className="config-btn" onClick={irAConfiguracion}>
-            Configuración <FiSettings className="icon" />
-          </button>
-        )}
-        
+    <AppLayout>
+      <div className="page-header">
+        <div>
+          <h1 className="page-title">Mis jornadas</h1>
+          <p className="page-subtitle">Registra la entrada y la salida de hoy y consulta tu historial.</p>
+        </div>
       </div>
       <ControlPanel />
-    </div>
+    </AppLayout>
   );
 }

@@ -1,46 +1,105 @@
 import { useState } from 'react';
-import api from '../api';
 import { useNavigate } from 'react-router-dom';
-import '../styles/LoginStyle.css';
-import { FaUser, FaLock } from 'react-icons/fa';
+import { FiAlertCircle, FiEye, FiEyeOff, FiLogIn } from 'react-icons/fi';
+import api from '../api';
 
 export default function LoginForm() {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [error, setError] = useState('');
-    const navigate = useNavigate();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [verPassword, setVerPassword] = useState(false);
+  const [errores, setErrores] = useState({});
+  const [error, setError] = useState('');
+  const [enviando, setEnviando] = useState(false);
+  const navigate = useNavigate();
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        try {
-            const res = await api.post('/auth/login', { email, password });
-            localStorage.setItem('token', res.data.token);
-            navigate('/dashboard');
-        } catch {
-            setError('Credenciales incorrectas');
-        }
-    };
+  const validar = () => {
+    const e = {};
+    if (!email.trim()) e.email = 'Introduce tu correo electrónico.';
+    else if (!/^\S+@\S+\.\S+$/.test(email.trim())) e.email = 'Introduce un correo electrónico válido.';
+    if (!password) e.password = 'Introduce tu contraseña.';
+    return e;
+  };
 
-    return (
-        <div className="wrapper">
-            <form onSubmit={handleSubmit}>
-                <h1>Iniciar sesión</h1>
-                {error && <p style={{ color: 'red' }}>{error}</p>}
-                <div className="input-box">
-                    <input type="email" placeholder="Correo electrónico" value={email} onChange={(e) => setEmail(e.target.value)} required/>
-                    <FaUser className="icon" />
-                </div>
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError('');
+    const encontrados = validar();
+    setErrores(encontrados);
+    if (Object.keys(encontrados).length > 0) return;
 
-                <div className="input-box">
-                    <input type="password" placeholder="Contraseña" value={password} onChange={(e) => setPassword(e.target.value)} required/>
-                    <FaLock className="icon" />
-                </div>
-                
-                <button type="submit">Ingresar</button>
-            </form>
+    setEnviando(true);
+    try {
+      const res = await api.post('/auth/login', { email, password });
+      localStorage.setItem('token', res.data.token);
+      navigate('/dashboard');
+    } catch {
+      setError('Credenciales incorrectas');
+      setEnviando(false);
+    }
+  };
 
+  return (
+    <div className="card login-card">
+      <h1>Iniciar sesión</h1>
+      <p className="lead">Accede con tu cuenta de la empresa.</p>
+
+      <form className="login-form" onSubmit={handleSubmit} noValidate>
+        {error && (
+          <div className="alert alert-error" role="alert">
+            <FiAlertCircle aria-hidden="true" />
+            <span>{error}. Revisa el correo y la contraseña.</span>
+          </div>
+        )}
+
+        <div className="field">
+          <label className="field-label" htmlFor="login-email">Correo electrónico</label>
+          <input
+            id="login-email"
+            className="input"
+            type="email"
+            autoComplete="username"
+            placeholder="nombre@empresa.com"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+            aria-invalid={errores.email ? 'true' : undefined}
+            aria-describedby={errores.email ? 'login-email-error' : undefined}
+          />
+          {errores.email && <span id="login-email-error" className="field-error" role="alert">{errores.email}</span>}
         </div>
-    );
+
+        <div className="field">
+          <label className="field-label" htmlFor="login-password">Contraseña</label>
+          <div className="password-field">
+            <input
+              id="login-password"
+              className="input"
+              type={verPassword ? 'text' : 'password'}
+              autoComplete="current-password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              aria-invalid={errores.password ? 'true' : undefined}
+              aria-describedby={errores.password ? 'login-password-error' : undefined}
+            />
+            <button
+              type="button"
+              className="password-toggle"
+              onClick={() => setVerPassword((v) => !v)}
+              aria-label={verPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
+              aria-pressed={verPassword}
+            >
+              {verPassword ? <FiEyeOff aria-hidden="true" /> : <FiEye aria-hidden="true" />}
+            </button>
+          </div>
+          {errores.password && <span id="login-password-error" className="field-error" role="alert">{errores.password}</span>}
+        </div>
+
+        <button type="submit" className="btn btn-primary btn-block" disabled={enviando}>
+          <FiLogIn aria-hidden="true" />
+          {enviando ? 'Ingresando…' : 'Ingresar'}
+        </button>
+      </form>
+    </div>
+  );
 }
-
-

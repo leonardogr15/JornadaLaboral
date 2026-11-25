@@ -1,65 +1,95 @@
 import { useState } from 'react';
-import { FaUser, FaLock } from 'react-icons/fa';
-import { IoIosArrowDown } from "react-icons/io";
-import '../styles/ControlPanelStyle.css';
+import { FiAlertCircle, FiSave, FiX } from 'react-icons/fi';
 
-export default function UserForm({ editingUser, onCreate, onUpdate }) {
-    // The parent remounts this form (key) when the user being edited changes,
-    // so the initial state is derived once from the props.
-    const [nuevoUsuario, setNuevoUsuario] = useState(() =>
+const VACIO = { id: null, nombre: '', email: '', password: '', rol: 'user' };
+
+/**
+ * Create or edit form. The parent remounts it (key) when the user being edited changes, so the
+ * initial state is derived once from the props.
+ */
+export default function UserForm({ editingUser, onCreate, onUpdate, onCancel, error = '', enviando = false }) {
+    const [usuario, setUsuario] = useState(() =>
         editingUser
             ? { id: editingUser.id, nombre: editingUser.nombre, email: editingUser.email, password: '', rol: editingUser.rol }
-            : { id: null, nombre: '', email: '', password: '', rol: 'user' }
+            : VACIO
     );
+    const editando = Boolean(usuario.id);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setNuevoUsuario(prev => ({ ...prev, [name]: value }));
+        setUsuario((prev) => ({ ...prev, [name]: value }));
     };
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        if (nuevoUsuario.id) {
-            onUpdate(nuevoUsuario);
-        } else {
-            onCreate(nuevoUsuario);
-        }
-        setNuevoUsuario({ id: null, nombre: '', email: '', password: '', rol: 'user' });
+        if (editando) onUpdate(usuario);
+        else onCreate(usuario);
     };
 
     return (
-        <div>
-            <h3>{nuevoUsuario.id ? 'Editar Usuario' : 'Crear Usuario'}</h3>
-            <form onSubmit={handleSubmit}>
-                <div className="input-row-user">
-                    <div className="input-box-user">
-                        <input name="nombre" type="text" placeholder="Nombre" value={nuevoUsuario.nombre} onChange={handleChange} required />
-                        <FaUser className="icon" />
+        <section className="card" aria-labelledby="form-usuario-titulo">
+            <div className="card-header">
+                <div>
+                    <h2 id="form-usuario-titulo" className="card-title">{editando ? 'Editar usuario' : 'Crear usuario'}</h2>
+                    <p className="card-subtitle">
+                        {editando ? 'Cambia los datos o el rol. La contraseña solo cambia si escribes una nueva.' : 'La persona podrá iniciar sesión con este correo y contraseña.'}
+                    </p>
+                </div>
+            </div>
+            <form className="card-body" onSubmit={handleSubmit}>
+                {error && (
+                    <div className="alert alert-error form-alert" role="alert">
+                        <FiAlertCircle aria-hidden="true" />
+                        <span>{error}</span>
                     </div>
-
-                    <div className="input-box-user">
-                        <input name="email" type="email" placeholder="Correo electrónico" value={nuevoUsuario.email} onChange={handleChange} required />
-                        <FaUser className="icon" />
+                )}
+                <div className="user-form-grid">
+                    <div className="field">
+                        <label className="field-label" htmlFor="usuario-nombre">Nombre</label>
+                        <input id="usuario-nombre" className="input" name="nombre" type="text" autoComplete="off" value={usuario.nombre} onChange={handleChange} required maxLength={100} />
                     </div>
-
-                    <div className="input-box-user">
-                        <input name="password" type="password" placeholder={nuevoUsuario.id ? 'Nueva contraseña' : 'Contraseña'} value={nuevoUsuario.password} onChange={handleChange} {...(!nuevoUsuario.id && { required: true })} />
-                        <FaLock className="icon" />
+                    <div className="field">
+                        <label className="field-label" htmlFor="usuario-email">Correo electrónico</label>
+                        <input id="usuario-email" className="input" name="email" type="email" autoComplete="off" value={usuario.email} onChange={handleChange} required maxLength={150} />
                     </div>
-
-                    <div className="input-box-user">
-                        <select className='input-select-user' name="rol" value={nuevoUsuario.rol} onChange={handleChange}>
+                    <div className="field">
+                        <label className="field-label" htmlFor="usuario-password">{editando ? 'Nueva contraseña' : 'Contraseña'}</label>
+                        <input
+                            id="usuario-password"
+                            className="input"
+                            name="password"
+                            type="password"
+                            autoComplete="new-password"
+                            value={usuario.password}
+                            onChange={handleChange}
+                            minLength={8}
+                            maxLength={72}
+                            required={!editando}
+                            aria-describedby="usuario-password-ayuda"
+                        />
+                        <span id="usuario-password-ayuda" className="field-hint">
+                            {editando ? 'Déjala vacía para mantener la actual.' : 'Entre 8 y 72 caracteres.'}
+                        </span>
+                    </div>
+                    <div className="field">
+                        <label className="field-label" htmlFor="usuario-rol">Rol</label>
+                        <select id="usuario-rol" className="input" name="rol" value={usuario.rol} onChange={handleChange}>
                             <option value="user">Usuario</option>
                             <option value="admin">Administrador</option>
                         </select>
-                        <IoIosArrowDown className="icon" />
                     </div>
                 </div>
 
-                <div className="buttom-row">
-                    <button type="submit">{nuevoUsuario.id ? 'Actualizar' : 'Crear'}</button>
+                <div className="form-actions">
+                    <button type="button" className="btn btn-secondary" onClick={onCancel}>
+                        <FiX aria-hidden="true" /> Cancelar
+                    </button>
+                    <button type="submit" className="btn btn-primary" disabled={enviando}>
+                        <FiSave aria-hidden="true" />
+                        {enviando ? 'Guardando…' : editando ? 'Guardar cambios' : 'Crear usuario'}
+                    </button>
                 </div>
             </form>
-        </div>
+        </section>
     );
 }
